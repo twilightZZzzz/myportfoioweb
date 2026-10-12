@@ -1,0 +1,585 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Leader from '../components/Leader.astro';
+import Button from '../components/Button.astro';
+import Marquee from '../components/Marquee.astro';
+import FlowScene from '../components/FlowScene.astro';
+import ServicesRows from '../components/ServicesRows.astro';
+import ProjectsReel from '../components/ProjectsReel.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import FaqList from '../components/FaqList.astro';
+import LeadSection from '../components/LeadSection.astro';
+import { services } from '../data/services';
+import { generalFaq } from '../data/faq';
+import { siteConfig } from '../data/site';
+import { businessFlow, capabilities, generalProcess, principles } from '../data/home';
+import { getProjects } from '../lib/projects';
+import { getOwnerPhoto } from '../lib/photo';
+
+const projects = await getProjects();
+const photo = await getOwnerPhoto();
+
+const heroLines = [['Разрабатываю', 'сайты'], ['и', '<em>автоматизирую</em>'], ['процессы', 'для бизнеса']];
+const heroText = 'Разрабатываю сайты и автоматизирую процессы для бизнеса';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  ...(siteConfig.name ? { name: siteConfig.name, founder: { '@type': 'Person', name: siteConfig.name } } : {}),
+  description: 'Разработка сайтов, Telegram-ботов, автоматизация процессов и интеграции для бизнеса.',
+  url: Astro.site?.toString(),
+  address: { '@type': 'PostalAddress', addressLocality: siteConfig.city, addressRegion: siteConfig.region, addressCountry: 'RU' },
+  areaServed: { '@type': 'Country', name: 'Россия' },
+  ...(siteConfig.contacts.email ? { email: siteConfig.contacts.email } : {}),
+};
+---
+
+<Base
+  title="Разработка сайтов и автоматизация процессов в Уфе"
+  description="Лендинги, корпоративные сайты, веб-приложения и Telegram-боты. Интеграции и автоматизация обработки заявок. Уфа, работаю по всей России."
+  jsonLd={jsonLd}
+  credits
+>
+  <Leader slot="intro" />
+
+  <!-- HERO -->
+  <section class="hero" data-hero>
+    <div class="hero__glow" data-hero-glow aria-hidden="true"></div>
+    <div class="container hero__inner" data-hero-inner>
+      <p class="label hero__kicker" data-hero-fade><b>●</b> Full-stack разработчик · {siteConfig.city} → вся Россия</p>
+      <p class="hero__sub" data-hero-fade>
+        Создаю лендинги, корпоративные сайты, веб-приложения и Telegram-ботов. Подключаю интеграции и автоматизацию, чтобы цифровые инструменты помогали
+        бизнесу работать эффективнее.
+      </p>
+      <h1 class="hero__title" aria-label={heroText} data-hero-title>
+        {
+          ['base', 'lit'].map(layer => (
+            <span class:list={['hero__layer', `hero__layer--${layer}`]} aria-hidden="true">
+              {heroLines.map(words => (
+                <span class="line">
+                  <span class="line__in" set:html={words.join(' ')} />
+                </span>
+              ))}
+            </span>
+          ))
+        }
+      </h1>
+      <div class="hero__actions" data-hero-fade>
+        <Button href="/contact" size="lg" arrow data-magnetic>Обсудить проект</Button>
+        {
+          projects.length > 0 ? (
+            <Button href="/projects" size="lg" variant="secondary" data-magnetic>
+              Смотреть проекты
+            </Button>
+          ) : (
+            <Button href="/services" size="lg" variant="secondary" data-magnetic>
+              Посмотреть услуги
+            </Button>
+          )
+        }
+      </div>
+    </div>
+    <div class="hero__hud" data-hero-fade aria-hidden="true">
+      <span class="rec"><i></i>REC</span>
+      <span data-timecode>00:00:00:00</span>
+      <span class="hide-sm">54°44′ N · 55°58′ E</span>
+      <span>Листай ↓</span>
+    </div>
+    <span class="corner corner--tl"></span><span class="corner corner--tr"></span>
+    <span class="corner corner--bl"></span><span class="corner corner--br"></span>
+  </section>
+
+  <Marquee items={['Сайты', 'Автоматизация', 'Telegram-боты', 'Интеграции', 'ИИ-функции', 'Веб-приложения']} />
+
+  <!-- МАНИФЕСТ -->
+  <section class="manifesto">
+    <div class="container">
+      <p class="label" data-scramble><b>(00)</b> Манифест</p>
+      <p class="manifesto__text" data-words>
+        Сайт — это первая встреча клиента с вашим бизнесом. Он должен быть понятным, быстрым и <em>живым</em>, а заявка, которую оставил клиент, — доходить до
+        человека <em>за&nbsp;секунды</em>, а не теряться в почте.
+      </p>
+    </div>
+  </section>
+
+  <FlowScene steps={businessFlow} />
+
+  <!-- УСЛУГИ -->
+  <section class="section services" aria-labelledby="services-title">
+    <div class="container">
+      <div class="section-head section-head--split">
+        <div>
+          <p class="label" data-scramble><b>(02)</b> Услуги</p>
+          <h2 id="services-title" class="h2" data-split>Чем могу <em>помочь</em></h2>
+        </div>
+        <p class="text-2" data-reveal>Основное направление — разработка сайтов. Автоматизация, боты и ИИ-функции дополняют сайт или решают отдельные задачи.</p>
+      </div>
+      <ServicesRows services={services} />
+    </div>
+  </section>
+
+  {projects.length > 0 && <ProjectsReel projects={projects} />}
+
+  <!-- ВОЗМОЖНОСТИ -->
+  <section class="section" aria-labelledby="cap-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="label" data-scramble><b>(04)</b> Возможности</p>
+        <h2 id="cap-title" class="h2" data-split>Технологии — под задачу, <em>а не ради списка</em></h2>
+      </div>
+      <ul class="caps">
+        {
+          capabilities.map((c, i) => (
+            <li class="cap" data-reveal style={`--i:${i % 3}`} data-glow>
+              <span class="cap__n">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="cap__task">{c.task}</h3>
+              <p class="text-2">{c.how}</p>
+            </li>
+          ))
+        }
+      </ul>
+      {
+        siteConfig.stack.length > 0 && (
+          <div class="stack">
+            <p class="eyebrow">С чем работаю</p>
+            <ul>
+              {siteConfig.stack
+                .flatMap(g => g.items)
+                .map(t => (
+                  <li>{t}</li>
+                ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- ПРОЦЕСС -->
+  <section class="section" aria-labelledby="process-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="label" data-scramble><b>(05)</b> Процесс</p>
+        <h2 id="process-title" class="h2" data-split>Прозрачно <em>на каждом</em> этапе</h2>
+      </div>
+      <ProcessSteps steps={generalProcess} />
+    </div>
+  </section>
+
+  <!-- ОБО МНЕ -->
+  <section class="section about" aria-labelledby="about-title">
+    <div class="container about__grid">
+      {
+        photo && (
+          <div class="about__photo" data-reveal>
+            <Image src={photo} alt={`${siteConfig.name} — фото`} widths={[320, 640]} sizes="(max-width: 860px) 60vw, 320px" />
+          </div>
+        )
+      }
+      <div class="about__text">
+        <p class="label" data-scramble><b>(06)</b> Обо мне</p>
+        <h2 id="about-title" class="about__name" data-split>
+          {siteConfig.name || 'Имя не указано'}
+          <em>— {siteConfig.role.toLowerCase()} из {siteConfig.city === 'Уфа' ? 'Уфы' : siteConfig.city}</em>
+        </h2>
+        {siteConfig.about.experience && <p class="lead" data-reveal>{siteConfig.about.experience}</p>}
+        <ul class="about__list">
+          {
+            principles.map((p, i) => (
+              <li data-reveal style={`--i:${i}`}>
+                <span>{String(i + 1).padStart(2, '0')}</span>
+                {p}
+              </li>
+            ))
+          }
+        </ul>
+        <Button href="/about" variant="secondary" arrow data-magnetic>Подробнее обо мне</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container">
+      <FaqList items={generalFaq} />
+    </div>
+  </section>
+
+  <LeadSection />
+</Base>
+
+<style>
+  /* ---------------- HERO ---------------- */
+  .hero {
+    --x: 50%;
+    --y: 45%;
+    --r: 0px;
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: calc(var(--header-h) + var(--s-8)) 0 120px;
+    margin-top: calc(-1 * var(--header-h));
+    overflow: hidden;
+  }
+  .hero__glow {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 70vmax;
+    height: 70vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 90, 43, 0.36) 0%, rgba(255, 90, 43, 0.12) 35%, transparent 65%);
+    transform: translate(40vw, 50vh) translate(-50%, -50%);
+    pointer-events: none;
+    will-change: transform;
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 520px);
+    grid-template-areas: 'kicker sub' 'title title' 'actions actions';
+    align-items: end;
+    column-gap: var(--s-6);
+  }
+  .hero__kicker {
+    grid-area: kicker;
+    color: var(--text-2);
+    margin-bottom: clamp(20px, 3vw, 40px);
+  }
+  .hero__sub {
+    grid-area: sub;
+    margin-bottom: clamp(20px, 3vw, 40px);
+    color: var(--text-2);
+    font-size: clamp(16px, 1.3vw, 19px);
+    line-height: 1.5;
+  }
+  .hero__title {
+    grid-area: title;
+    display: grid;
+    font-size: clamp(48px, min(8.6vw, 15vh), 156px);
+    line-height: 0.9;
+    letter-spacing: -0.06em;
+    font-weight: 600;
+  }
+  .hero__title :global(em) {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    font-size: 1.08em;
+    padding-right: 0.06em;
+  }
+  .hero__layer {
+    grid-area: 1 / 1;
+    display: block;
+  }
+  .hero__layer--base {
+    color: #57524b;
+  }
+  .hero__layer--base :global(em) {
+    color: #6a3d2c;
+  }
+  .hero__layer--lit {
+    color: var(--text);
+    -webkit-mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0, 0, 0, 0.85) 45%, transparent 100%);
+    mask-image: radial-gradient(circle var(--r) at var(--x) var(--y), #000 0%, rgba(0, 0, 0, 0.85) 45%, transparent 100%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+  .hero__layer--lit :global(em) {
+    color: var(--accent);
+  }
+  /* без анимаций заголовок просто светлый */
+  :global(html:not(.motion)) .hero__layer--base {
+    color: var(--text);
+  }
+  :global(html:not(.motion)) .hero__layer--base :global(em) {
+    color: var(--accent);
+  }
+  :global(html:not(.motion)) .hero__layer--lit {
+    display: none;
+  }
+  .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.2em;
+    margin-bottom: -0.2em;
+  }
+  /* последняя строка без отрицательного отступа — чтобы хвосты «р», «ц», «д» были внутри слоя */
+  .line:last-child {
+    margin-bottom: 0;
+  }
+  .line__in {
+    display: block;
+    will-change: transform;
+  }
+  /* вход в сцену на CSS — начинается сразу, не дожидаясь скриптов */
+  :global(.motion) .hero {
+    --intro: 0.15s;
+  }
+  /* пока идёт отсчёт — анимации входа стоят на паузе в начальной точке */
+  :global(.motion.leader-on) .line__in,
+  :global(.motion.leader-on) .hero [data-hero-fade] {
+    animation-play-state: paused;
+  }
+  :global(.motion) .line__in {
+    animation: rise 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--intro) + var(--l, 0) * 80ms);
+  }
+  :global(.motion) .line:nth-child(2) .line__in {
+    --l: 1;
+  }
+  :global(.motion) .line:nth-child(3) .line__in {
+    --l: 2;
+  }
+  :global(.motion) .hero [data-hero-fade] {
+    animation: fade-up 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--intro) + 0.45s + var(--f, 0) * 80ms);
+  }
+  :global(.motion) .hero__sub {
+    --f: 1;
+  }
+  :global(.motion) .hero__actions {
+    --f: 2;
+  }
+  :global(.motion) .hero__hud {
+    --f: 3;
+  }
+  @keyframes rise {
+    from {
+      transform: translateY(115%);
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .hero__actions {
+    grid-area: actions;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: clamp(28px, 4vw, 48px);
+  }
+  .hero__hud {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-2);
+  }
+  .rec {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-2);
+  }
+  .rec i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1.2s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+  .hero .corner--tl,
+  .hero .corner--tr {
+    top: calc(var(--header-h) + 12px);
+  }
+  @media (max-width: 760px) {
+    .hero {
+      align-items: flex-end;
+    }
+    .hero__inner {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: 'kicker' 'title' 'sub' 'actions';
+    }
+    .hero__title {
+      font-size: clamp(40px, 12.4vw, 80px);
+    }
+    .hero__sub {
+      margin: var(--s-5) 0 0;
+    }
+    .hide-sm {
+      display: none;
+    }
+  }
+
+  /* ---------------- МАНИФЕСТ ---------------- */
+  .manifesto {
+    padding-block: clamp(100px, 16vw, 220px);
+  }
+  .manifesto__text {
+    margin-top: var(--s-6);
+    max-width: 1280px;
+    font-size: clamp(30px, 4.4vw, 70px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    font-weight: 500;
+  }
+  .manifesto__text em {
+    font-family: var(--f-serif);
+    font-style: italic;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+
+  /* ---------------- ВОЗМОЖНОСТИ ---------------- */
+  .caps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    border-top: 1px solid var(--line);
+    border-left: 1px solid var(--line);
+  }
+  .cap {
+    --gx: 50%;
+    --gy: 50%;
+    position: relative;
+    display: grid;
+    gap: var(--s-3);
+    align-content: start;
+    padding: var(--s-7) var(--s-6);
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    transition: background 0.4s;
+  }
+  .cap::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: -1px;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.6s var(--ease);
+  }
+  .cap:hover {
+    background: radial-gradient(360px circle at var(--gx) var(--gy), rgba(255, 90, 43, 0.1), transparent 70%);
+  }
+  .cap:hover::before {
+    transform: scaleX(1);
+  }
+  .cap__n {
+    font-family: var(--f-mono);
+    font-size: var(--fs-mono);
+    color: var(--accent);
+  }
+  .cap__task {
+    font-size: clamp(22px, 2vw, 30px);
+    letter-spacing: -0.035em;
+    line-height: 1.1;
+  }
+  .stack {
+    margin-top: var(--s-7);
+    display: grid;
+    gap: var(--s-3);
+  }
+  .stack ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .stack li {
+    padding: 6px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    font-size: var(--fs-small);
+  }
+
+  /* ---------------- ОБО МНЕ ---------------- */
+  .about__grid {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: clamp(var(--s-6), 5vw, var(--s-9));
+    align-items: start;
+  }
+  .about__photo {
+    width: clamp(200px, 24vw, 340px);
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .about__photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .about__text {
+    display: grid;
+    gap: var(--s-6);
+    justify-items: start;
+  }
+  .about__name {
+    font-size: clamp(44px, 7.4vw, 128px);
+    line-height: 0.92;
+    letter-spacing: -0.06em;
+  }
+  .about__name em {
+    display: block;
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 0.48em;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-top: 0.2em;
+    color: var(--accent);
+  }
+  .about__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 900px;
+    border-top: 1px solid var(--line);
+  }
+  .about__list li {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: clamp(18px, 1.6vw, 22px);
+    letter-spacing: -0.02em;
+  }
+  .about__list span {
+    font-family: var(--f-mono);
+    font-size: var(--fs-mono);
+    color: var(--accent);
+    padding-top: 6px;
+  }
+  @media (max-width: 860px) {
+    .about__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

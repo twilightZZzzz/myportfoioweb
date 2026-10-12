@@ -1,0 +1,151 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import CtaBlock from '../../components/CtaBlock.astro';
+import { getProjects, categoryLabels } from '../../lib/projects';
+
+const projects = await getProjects();
+const filters = [{ value: 'all', label: 'Все' }, ...Object.entries(categoryLabels).map(([value, label]) => ({ value, label }))];
+const counts = Object.fromEntries(filters.map(f => [f.value, f.value === 'all' ? projects.length : projects.filter(p => p.data.category === f.value).length]));
+---
+
+<Base
+  title="Проекты — сайты, автоматизация, Telegram-боты"
+  description="Проекты: от интерфейса до работающей логики. Каждый проект помечен статусом — демонстрационный или коммерческий."
+>
+  <PageHero
+    title="Проекты: от интерфейса до работающей логики"
+    lead="Каждый проект помечен статусом: «Демонстрационный» — сделан, чтобы показать подход и функциональность, «Коммерческий» — выполнен для заказчика."
+    crumbs={[{ label: 'Проекты' }]}
+  />
+
+  <section class="section">
+    <div class="container">
+      {
+        projects.length > 0 ? (
+          <>
+            <div class="filters" role="group" aria-label="Фильтр по направлению" data-filters>
+              {filters.map(f => (
+                <button type="button" class="filter" data-filter={f.value} aria-pressed={f.value === 'all' ? 'true' : 'false'} disabled={counts[f.value] === 0}>
+                  {f.label}
+                  <span class="filter__n">{counts[f.value]}</span>
+                </button>
+              ))}
+            </div>
+            <p class="sr-only" role="status" aria-live="polite" data-filter-status />
+            <div class="grid-2 projects" data-projects>
+              {projects.map((p, i) => (
+                <ProjectCard project={p} index={i} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div class="empty" data-reveal>
+            <p class="eyebrow">Раздел наполняется</p>
+            <h2 class="h2">Первые проекты сейчас в работе</h2>
+            <p class="lead">
+              Здесь появятся только реализованные и проверенные проекты — с рабочими демо, описанием решений и честной пометкой статуса. Пока можно посмотреть,
+              какие задачи я решаю, или сразу обсудить вашу.
+            </p>
+            <div class="empty__actions">
+              <Button href="/services" variant="secondary">
+                Посмотреть услуги
+              </Button>
+              <Button href="/contact" arrow>
+                Обсудить проект
+              </Button>
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  {projects.length > 0 && <CtaBlock title="Хотите похожее решение?" />}
+</Base>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    margin-bottom: var(--s-6);
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 18px;
+    border-radius: 99px;
+    border: 1px solid var(--line-strong);
+    background: none;
+    cursor: pointer;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s;
+  }
+  .filter:hover:not([disabled]) {
+    border-color: var(--text);
+  }
+  .filter[aria-pressed='true'] {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+  }
+  .filter[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .filter__n {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .empty {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+    max-width: 820px;
+  }
+  .empty__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+</style>
+
+<script>
+  const group = document.querySelector<HTMLElement>('[data-filters]');
+  const grid = document.querySelector<HTMLElement>('[data-projects]');
+  const status = document.querySelector<HTMLElement>('[data-filter-status]');
+
+  if (group && grid) {
+    const buttons = [...group.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+    const cards = [...grid.querySelectorAll<HTMLElement>('[data-category]')];
+
+    const apply = (value: string, push = true) => {
+      if (!buttons.some(b => b.dataset.filter === value && !b.disabled)) value = 'all';
+      buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.filter === value)));
+      let shown = 0;
+      cards.forEach(c => {
+        const on = value === 'all' || c.dataset.category === value;
+        c.hidden = !on;
+        if (on) shown++;
+      });
+      if (status) status.textContent = `Показано проектов: ${shown}`;
+      if (push) {
+        const url = new URL(location.href);
+        if (value === 'all') url.searchParams.delete('category');
+        else url.searchParams.set('category', value);
+        history.replaceState(null, '', url);
+      }
+    };
+
+    buttons.forEach(b => b.addEventListener('click', () => apply(b.dataset.filter!)));
+    apply(new URLSearchParams(location.search).get('category') ?? 'all', false);
+  }
+</script>

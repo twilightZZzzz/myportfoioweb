@@ -1,0 +1,120 @@
+---
+/* Обратный отсчёт киноплёнки при первом входе на главную за сессию. Esc или кнопка — пропустить. */
+import { siteConfig } from '../data/site';
+---
+
+<div class="leader" data-leader aria-hidden="true">
+  <div class="leader__ring" data-leader-ring>
+    <div class="leader__sweep" data-leader-sweep></div>
+    <span class="leader__cross leader__cross--h"></span>
+    <span class="leader__cross leader__cross--v"></span>
+    <span class="leader__num" data-leader-num>3</span>
+  </div>
+  <div class="leader__meta" data-leader-fade>
+    <span>{siteConfig.city.toUpperCase()}</span><span>СЦЕНА 01</span><span data-leader-pct>000%</span>
+  </div>
+  <button class="leader__skip" type="button" data-leader-skip data-leader-fade tabindex="-1">Пропустить · Esc</button>
+</div>
+<script is:inline>
+  (function () {
+    const el = document.querySelector('[data-leader]');
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem('leader-seen') === '1';
+    } catch {
+      /* приватный режим — показываем отсчёт */
+    }
+    if (el && document.documentElement.classList.contains('motion') && !seen) {
+      el.classList.add('is-on');
+      document.documentElement.classList.add('leader-on');
+    }
+  })();
+</script>
+
+<style>
+  .leader {
+    position: fixed;
+    inset: 0;
+    z-index: 9800;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    background: var(--bg);
+  }
+  :global(.motion) .leader:global(.is-on) {
+    display: flex;
+  }
+  .leader__ring {
+    position: relative;
+    width: min(56vw, 260px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .leader__ring::after {
+    content: '';
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+  }
+  .leader__sweep {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, rgba(255, 90, 43, 0.32) var(--p, 0deg), transparent 0);
+  }
+  .leader__cross {
+    position: absolute;
+    background: var(--line);
+  }
+  .leader__cross--h {
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+  }
+  .leader__cross--v {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+  }
+  .leader__num {
+    position: relative;
+    z-index: 1;
+    font-size: min(28vw, 132px);
+    font-weight: 400;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .leader__meta {
+    display: flex;
+    gap: 24px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-2);
+  }
+  .leader__skip {
+    position: absolute;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    background: none;
+    border: 0;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 12px;
+  }
+  .leader__skip:hover {
+    color: var(--text);
+  }
+</style>

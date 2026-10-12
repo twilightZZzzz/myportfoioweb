@@ -1,0 +1,49 @@
+---
+import type { Service } from '../data/types';
+
+interface Props {
+  name: Service['icon'] | 'arrow' | 'check';
+  size?: number;
+}
+const { name, size = 28 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  {
+    name === 'browser' && (
+      <>
+        <rect x="3" y="5" width="26" height="22" rx="3" />
+        <path d="M3 11h26M7 8h.01M10 8h.01M13 8h.01M8 16h9M8 20h6" />
+        <rect x="20" y="15" width="5" height="7" rx="1" />
+      </>
+    )
+  }
+  {
+    name === 'flow' && (
+      <>
+        <rect x="3" y="4" width="9" height="7" rx="2" />
+        <rect x="20" y="13" width="9" height="7" rx="2" />
+        <rect x="3" y="22" width="9" height="7" rx="2" />
+        <path d="M12 7.5h4a3 3 0 0 1 3 3v6M12 25.5h4a3 3 0 0 0 3-3V20" />
+      </>
+    )
+  }
+  {
+    name === 'bot' && (
+      <>
+        <rect x="5" y="9" width="22" height="16" rx="4" />
+        <path d="M16 9V5M12 16v1M20 16v1M12 21h8M2 15v4M30 15v4" />
+      </>
+    )
+  }
+  {
+    name === 'spark' && (
+      <>
+        <path d="M16 3l2.6 7.4L26 13l-7.4 2.6L16 23l-2.6-7.4L6 13l7.4-2.6z" />
+        <path d="M25 21l1 3 3 1-3 1-1 3-1-3-3-1 3-1z" />
+      </>
+    )
+  }
+  {name === 'arrow' && <path d="M8 24L24 8M11 8h13v13" />}
+  {name === 'check' && <path d="M6 17l6 6L26 9" />}
+</svg>

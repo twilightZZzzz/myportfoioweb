@@ -1,0 +1,115 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  type?: 'button' | 'submit';
+  arrow?: boolean;
+  class?: string;
+} & Omit<HTMLAttributes<'a'>, 'class' | 'href'> &
+  Omit<HTMLAttributes<'button'>, 'class' | 'type'>;
+
+const { href, variant = 'primary', size = 'md', type = 'button', arrow = false, class: cls, ...rest } = Astro.props;
+const classes = ['btn', `btn--${variant}`, `btn--${size}`, cls];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} {...rest}>
+      <span>
+        <slot />
+      </span>
+      {arrow && (
+        <span class="btn__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </a>
+  ) : (
+    <button type={type} class:list={classes} {...rest}>
+      <span>
+        <slot />
+      </span>
+      {arrow && (
+        <span class="btn__arrow" aria-hidden="true">
+          →
+        </span>
+      )}
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-radius: 99px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background 0.25s,
+      color 0.25s,
+      border-color 0.25s,
+      transform 0.25s var(--ease);
+  }
+  .btn:active {
+    transform: scale(0.98);
+  }
+  .btn--sm {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: var(--fs-small);
+  }
+  .btn--md {
+    min-height: 52px;
+    padding: 0 24px;
+  }
+  .btn--lg {
+    min-height: 60px;
+    padding: 0 30px;
+    font-size: 18px;
+  }
+  .btn--primary {
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn--primary:hover {
+    background: var(--accent-hover);
+  }
+  .btn--secondary {
+    border-color: var(--line-strong);
+    color: var(--text);
+  }
+  .btn--secondary:hover {
+    border-color: var(--text);
+    background: rgba(239, 234, 224, 0.05);
+  }
+  .btn--ghost {
+    padding-inline: 4px;
+    color: var(--text);
+    min-height: 44px;
+  }
+  .btn--ghost:hover {
+    color: var(--accent);
+  }
+  .btn__arrow {
+    transition: transform 0.35s var(--ease);
+  }
+  .btn:hover .btn__arrow {
+    transform: translateX(4px);
+  }
+  .btn[disabled],
+  .btn[aria-disabled='true'] {
+    opacity: 0.6;
+    cursor: progress;
+  }
+</style>

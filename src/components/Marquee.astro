@@ -1,0 +1,73 @@
+---
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+const group = items.map((t, i) => ({ t, serif: i % 2 === 1 }));
+---
+
+<section class="marquee" aria-label={items.join(', ')}>
+  <div class="marquee__track" data-marquee>
+    {
+      [0, 1].map(() => (
+        <div class="marquee__group" aria-hidden="true">
+          {group.map(g => (
+            <>
+              <span class:list={{ serif: g.serif }}>{g.t}</span>
+              <i>✦</i>
+            </>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .marquee {
+    border-block: 1px solid var(--line);
+    padding: clamp(16px, 2.4vw, 28px) 0;
+    overflow: hidden;
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+  .marquee__group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .marquee__group > * {
+    font-size: clamp(36px, 7vw, 108px);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 0 0.3em;
+  }
+  .marquee__group .serif {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-size: clamp(40px, 7.8vw, 120px);
+    letter-spacing: -0.02em;
+  }
+  .marquee__group i {
+    font-style: normal;
+    color: var(--accent);
+    font-size: clamp(20px, 3vw, 44px);
+  }
+  /* без движения — строка просто переносится */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      width: auto;
+    }
+    .marquee__group {
+      flex-wrap: wrap;
+    }
+    .marquee__group + .marquee__group {
+      display: none;
+    }
+  }
+</style>

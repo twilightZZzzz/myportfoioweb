@@ -1,0 +1,18 @@
+---
+import StatusPage from '../../components/StatusPage.astro';
+import Button from '../../components/Button.astro';
+import { siteConfig, telegramUrl } from '../../data/site';
+
+const tg = telegramUrl(siteConfig.contacts.telegram);
+const { email } = siteConfig.contacts;
+---
+
+<StatusPage
+  title="Заявка не отправлена"
+  heading="Заявка не отправлена"
+  text="Проверьте, что заполнены все обязательные поля и отмечено согласие, и попробуйте ещё раз. Если ошибка повторяется — напишите напрямую."
+>
+  <Button href="/contact" arrow>Вернуться к форме</Button>
+  {tg && <Button href={tg} variant="secondary" target="_blank" rel="noopener">Написать в Telegram</Button>}
+  {email && <Button href={`mailto:${email}`} variant="secondary">Написать на почту</Button>}
+</StatusPage>

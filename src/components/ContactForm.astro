@@ -1,0 +1,388 @@
+---
+import Button from './Button.astro';
+import { budgets, contactMethods, projectTypes, LIMITS } from '../lib/contact/validate';
+import { siteConfig, telegramUrl } from '../data/site';
+
+interface Props {
+  /** Тип проекта, выбранный заранее (например, со страницы услуги) */
+  preset?: keyof typeof projectTypes;
+}
+const { preset } = Astro.props;
+const tg = telegramUrl(siteConfig.contacts.telegram);
+const email = siteConfig.contacts.email;
+---
+
+<form class="form" action="/api/contact" method="post" novalidate data-contact-form>
+  <div class="form__grid">
+    <div class="field">
+      <label for="cf-name">Имя</label>
+      <input id="cf-name" name="name" type="text" autocomplete="name" required minlength={LIMITS.name[0]} maxlength={LIMITS.name[1]} aria-describedby="cf-name-err" />
+      <p class="field__err" id="cf-name-err" data-error-for="name"></p>
+    </div>
+
+    <div class="field">
+      <label for="cf-method">Как с вами связаться</label>
+      <div class="field__pair">
+        <select id="cf-method" name="method" required aria-describedby="cf-method-err" data-method>
+          {Object.entries(contactMethods).map(([v, l]) => <option value={v}>{l}</option>)}
+        </select>
+        <input id="cf-contact" name="contact" type="text" required maxlength={LIMITS.contact[1]} placeholder="@username" aria-label="Контакт" aria-describedby="cf-contact-err" data-contact />
+      </div>
+      <p class="field__err" id="cf-method-err" data-error-for="method"></p>
+      <p class="field__err" id="cf-contact-err" data-error-for="contact"></p>
+    </div>
+
+    <div class="field">
+      <label for="cf-type">Тип проекта</label>
+      <select id="cf-type" name="projectType" required aria-describedby="cf-type-err">
+        {Object.entries(projectTypes).map(([v, l]) => <option value={v} selected={v === (preset ?? 'site')}>{l}</option>)}
+      </select>
+      <p class="field__err" id="cf-type-err" data-error-for="projectType"></p>
+    </div>
+
+    <div class="field">
+      <label for="cf-budget">Бюджет <span class="muted">— необязательно</span></label>
+      <select id="cf-budget" name="budget" aria-describedby="cf-budget-err">
+        {Object.entries(budgets).map(([v, l]) => <option value={v}>{l}</option>)}
+      </select>
+      <p class="field__err" id="cf-budget-err" data-error-for="budget"></p>
+    </div>
+
+    <div class="field field--wide">
+      <label for="cf-message">Коротко о задаче</label>
+      <textarea id="cf-message" name="message" rows="5" required minlength={LIMITS.message[0]} maxlength={LIMITS.message[1]} placeholder="Что нужно сделать, есть ли сайт сейчас, какие сроки" aria-describedby="cf-message-err"></textarea>
+      <p class="field__err" id="cf-message-err" data-error-for="message"></p>
+    </div>
+
+    <div class="field field--wide">
+      <label class="check">
+        <input type="checkbox" name="consent" required aria-describedby="cf-consent-err" />
+        <span>
+          Даю <a href="/consent" target="_blank">согласие на обработку персональных данных</a> и принимаю{' '}
+          <a href="/privacy" target="_blank">политику их обработки</a>
+        </span>
+      </label>
+      <p class="field__err" id="cf-consent-err" data-error-for="consent"></p>
+    </div>
+  </div>
+
+  <!-- Ловушка для ботов: поле скрыто от людей и скринридеров -->
+  <div class="hp" aria-hidden="true">
+    <label for="cf-website">Сайт</label>
+    <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+  <input type="hidden" name="startedAt" value="" data-started />
+  <input type="hidden" name="page" value={Astro.url.pathname} />
+
+  <div class="form__footer">
+    <Button type="submit" size="lg" data-submit>Отправить заявку</Button>
+    <p class="form__status" role="status" aria-live="polite" data-status></p>
+  </div>
+
+  {
+    (tg || email) && (
+      <p class="form__alt muted">
+        Удобнее написать напрямую?{' '}
+        {tg && (
+          <a href={tg} target="_blank" rel="noopener">
+            Telegram
+          </a>
+        )}
+        {tg && email && ' или '}
+        {email && <a href={`mailto:${email}`}>{email}</a>}
+      </p>
+    )
+  }
+</form>
+
+<div class="sent" hidden data-sent tabindex="-1">
+  <p class="sent__icon" aria-hidden="true">✓</p>
+  <h3 class="h3">Заявка отправлена</h3>
+  <p class="text-2">Спасибо! Я прочитаю задачу и отвечу выбранным способом связи.</p>
+  <button type="button" class="sent__again" data-again>Отправить ещё одну</button>
+</div>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--s-5);
+  }
+  .form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4) var(--s-5);
+  }
+  .field {
+    display: grid;
+    gap: var(--s-2);
+    align-content: start;
+  }
+  .field--wide {
+    grid-column: 1 / -1;
+  }
+  label {
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+  input[type='text'],
+  select,
+  textarea {
+    width: 100%;
+    min-height: 52px;
+    padding: 12px 16px;
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    font-size: 16px;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 140px;
+  }
+  select {
+    appearance: none;
+    padding-right: 40px;
+    background-image: linear-gradient(45deg, transparent 50%, var(--text-2) 50%),
+      linear-gradient(135deg, var(--text-2) 50%, transparent 50%);
+    background-position:
+      calc(100% - 22px) 50%,
+      calc(100% - 16px) 50%;
+    background-size: 6px 6px;
+    background-repeat: no-repeat;
+  }
+  input:hover,
+  select:hover,
+  textarea:hover {
+    border-color: var(--text-2);
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  [aria-invalid='true'] {
+    border-color: var(--danger) !important;
+  }
+  ::placeholder {
+    color: var(--muted);
+  }
+  .field__pair {
+    display: grid;
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: var(--s-2);
+  }
+  .field__err {
+    min-height: 0;
+    color: var(--danger);
+    font-size: 14px;
+  }
+  .field__err:empty {
+    display: none;
+  }
+  .check {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--s-3);
+    font-weight: 400;
+    color: var(--text-2);
+    cursor: pointer;
+  }
+  .check input {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    margin: 1px 0 0;
+    accent-color: var(--accent);
+  }
+  .check a {
+    color: var(--text);
+    text-underline-offset: 3px;
+  }
+  .hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .form__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
+  }
+  .form__status {
+    font-size: var(--fs-small);
+    color: var(--text-2);
+  }
+  .form__status[data-tone='error'] {
+    color: var(--danger);
+  }
+  .form__alt a {
+    color: var(--text);
+    text-underline-offset: 3px;
+  }
+  .sent {
+    display: grid;
+    gap: var(--s-3);
+    justify-items: start;
+    padding: var(--s-6);
+    border: 1px solid rgba(98, 211, 148, 0.4);
+    border-radius: var(--radius-lg);
+    background: rgba(98, 211, 148, 0.06);
+  }
+  .sent:focus {
+    outline: none;
+  }
+  .sent__icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--success);
+    color: var(--on-accent);
+    font-size: 22px;
+  }
+  .sent__again {
+    margin-top: var(--s-2);
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  @media (max-width: 640px) {
+    .form__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .field__pair {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .form__footer :global(.btn) {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { validateContact, type FieldErrors } from '../lib/contact/validate';
+
+  const placeholders: Record<string, [string, string, AutoFill]> = {
+    telegram: ['@username', 'text', 'off'],
+    phone: ['+7 900 000-00-00', 'tel', 'tel'],
+    email: ['name@company.ru', 'email', 'email'],
+  };
+
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach(form => {
+    const sent = form.nextElementSibling as HTMLElement;
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const method = form.querySelector<HTMLSelectElement>('[data-method]')!;
+    const contact = form.querySelector<HTMLInputElement>('[data-contact]')!;
+    const started = form.querySelector<HTMLInputElement>('[data-started]')!;
+    started.value = String(Date.now());
+
+    const syncContact = () => {
+      const [ph, mode, ac] = placeholders[method.value] ?? placeholders.telegram!;
+      contact.placeholder = ph;
+      contact.inputMode = mode;
+      contact.autocomplete = ac;
+    };
+    method.addEventListener('change', syncContact);
+    syncContact();
+
+    // тип проекта, переданный со страницы услуги: /contact?type=bot
+    const presetType = new URLSearchParams(location.search).get('type');
+    const typeSelect = form.querySelector<HTMLSelectElement>('[name="projectType"]')!;
+    if (presetType && [...typeSelect.options].some(o => o.value === presetType)) typeSelect.value = presetType;
+
+    const fieldFor = (name: string) => form.elements.namedItem(name) as HTMLInputElement | null;
+
+    const showErrors = (errors: FieldErrors) => {
+      form.querySelectorAll<HTMLElement>('[data-error-for]').forEach(el => {
+        const name = el.dataset.errorFor!;
+        const msg = errors[name as keyof FieldErrors] ?? '';
+        el.textContent = msg;
+        fieldFor(name)?.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      });
+    };
+
+    const data = () => {
+      const fd = new FormData(form);
+      return { ...Object.fromEntries(fd.entries()), consent: fd.get('consent') === 'on' };
+    };
+
+    // после первой попытки отправки подсказываем об ошибках по мере ввода
+    let touched = false;
+    form.addEventListener('input', () => {
+      if (!touched) return;
+      const r = validateContact(data());
+      showErrors(r.ok ? {} : r.errors);
+    });
+
+    const setStatus = (text: string, tone: 'info' | 'error' = 'info') => {
+      status.textContent = text;
+      status.dataset.tone = tone;
+    };
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      touched = true;
+      const payload = data();
+      const check = validateContact(payload);
+      if (!check.ok) {
+        showErrors(check.errors);
+        setStatus('Проверьте выделенные поля', 'error');
+        const first = Object.keys(check.errors)[0];
+        if (first) (first === 'method' ? method : fieldFor(first))?.focus();
+        return;
+      }
+      showErrors({});
+      submit.disabled = true;
+      submit.setAttribute('aria-busy', 'true');
+      setStatus('Отправляю…');
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json', accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const body = await res.json().catch(() => null);
+        if (res.ok && body?.ok) {
+          form.reset();
+          syncContact();
+          setStatus('');
+          form.hidden = true;
+          sent.hidden = false;
+          sent.focus();
+          return;
+        }
+        if (body?.errors) showErrors(body.errors);
+        setStatus(body?.message ?? 'Не удалось отправить заявку. Попробуйте ещё раз.', 'error');
+      } catch {
+        setStatus('Нет соединения. Проверьте интернет и попробуйте ещё раз.', 'error');
+      } finally {
+        submit.disabled = false;
+        submit.removeAttribute('aria-busy');
+      }
+    });
+
+    sent.querySelector('[data-again]')?.addEventListener('click', () => {
+      sent.hidden = true;
+      form.hidden = false;
+      touched = false;
+      started.value = String(Date.now());
+      fieldFor('name')?.focus();
+    });
+  });
+</script>

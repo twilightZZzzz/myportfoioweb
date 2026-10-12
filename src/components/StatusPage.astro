@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+
+interface Props {
+  title: string;
+  heading: string;
+  text: string;
+  code?: string;
+}
+const { title, heading, text, code } = Astro.props;
+---
+
+<Base title={title} description={text} noindex>
+  <section class="status" data-glow>
+    <div class="container status__inner">
+      {code && <p class="status__code" aria-hidden="true">{code}</p>}
+      <h1 class="h1">{heading}</h1>
+      <p class="lead">{text}</p>
+      <div class="status__actions">
+        <slot />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .status {
+    --gx: 50%;
+    --gy: 30%;
+    min-height: 70vh;
+    display: grid;
+    align-items: center;
+    padding-block: var(--s-9);
+    background: radial-gradient(600px circle at var(--gx) var(--gy), rgba(255, 90, 43, 0.12), transparent 60%);
+  }
+  .status__inner {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .status__code {
+    font-size: clamp(96px, 18vw, 220px);
+    font-weight: 600;
+    letter-spacing: -0.06em;
+    line-height: 0.85;
+    color: var(--accent);
+  }
+  .status__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+</style>

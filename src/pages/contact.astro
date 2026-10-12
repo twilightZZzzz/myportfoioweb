@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import LeadSection from '../components/LeadSection.astro';
+---
+
+<Base
+  title="Контакты — обсудить проект"
+  description="Расскажите о вашей задаче: разработка сайта, автоматизация, Telegram-бот или ИИ-функции. Ответ — выбранным способом связи."
+>
+  <div class="container crumbs-wrap">
+    <Breadcrumbs items={[{ label: 'Контакты' }]} />
+  </div>
+  <LeadSection headingLevel="h1" title="Расскажите о вашей" accent="задаче" label="Контакты" />
+</Base>
+
+<style>
+  .crumbs-wrap {
+    padding-top: var(--s-6);
+  }
+  .crumbs-wrap + :global(.lead-section) {
+    border-top: 0;
+    padding-top: var(--s-6);
+  }
+</style>

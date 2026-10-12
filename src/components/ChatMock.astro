@@ -1,0 +1,104 @@
+---
+interface Props {
+  messages: { from: 'bot' | 'user'; text: string }[];
+  title?: string;
+}
+const { messages, title = 'Бот записи' } = Astro.props;
+---
+
+<figure class="chat" data-reveal>
+  <figcaption class="chat__head">
+    <span class="chat__avatar" aria-hidden="true">B</span>
+    <span>
+      <b>{title}</b>
+      <span class="muted">пример сценария</span>
+    </span>
+  </figcaption>
+  <ol class="chat__list">
+    {
+      messages.map((m, i) => (
+        <li class:list={['msg', `msg--${m.from}`]} style={`--i:${i}`}>
+          <span class="sr-only">{m.from === 'bot' ? 'Бот: ' : 'Пользователь: '}</span>
+          {m.text}
+        </li>
+      ))
+    }
+  </ol>
+</figure>
+
+<style>
+  .chat {
+    margin: 0;
+    max-width: 440px;
+    width: 100%;
+    background: #17212b;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .chat__head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-3) var(--s-4);
+    background: #1f2b38;
+    font-size: var(--fs-small);
+  }
+  .chat__head b {
+    display: block;
+    font-weight: 600;
+  }
+  .chat__head .muted {
+    font-size: 13px;
+  }
+  .chat__avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+  .chat__list {
+    list-style: none;
+    margin: 0;
+    padding: var(--s-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .msg {
+    max-width: 82%;
+    padding: 9px 13px;
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .msg--bot {
+    align-self: flex-start;
+    background: #24303d;
+    border-bottom-left-radius: 4px;
+  }
+  .msg--user {
+    align-self: flex-end;
+    background: #2b5278;
+    border-bottom-right-radius: 4px;
+  }
+  /* сообщения появляются по очереди, как в настоящем диалоге */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .msg {
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 0.5s var(--ease),
+        transform 0.5s var(--ease);
+      transition-delay: calc(var(--i) * 450ms + 200ms);
+    }
+    :global(.js) .chat:global(.is-in) .msg {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

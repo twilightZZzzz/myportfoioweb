@@ -1,0 +1,164 @@
+---
+import { Image } from 'astro:assets';
+import StatusBadge from './StatusBadge.astro';
+import CaseVideo from './CaseVideo.astro';
+import { categoryLabels, type Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+  index?: number;
+}
+const { project, index = 0 } = Astro.props;
+const p = project.data;
+---
+
+<article class="pcard" data-category={p.category} data-reveal style={`--i:${index % 3}`} data-tilt>
+  <div class="pcard__media">
+    {
+      p.video ? (
+        <CaseVideo mp4={p.video.mp4Small ?? p.video.mp4} poster={p.video.poster} label={p.video.label} />
+      ) : p.cover ? (
+        <Image src={p.cover.src} alt={p.cover.alt} widths={[480, 800, 1200]} sizes="(max-width: 860px) 100vw, 50vw" />
+      ) : (
+        <div class="pcard__fallback" aria-hidden="true">
+          <span>{p.title}</span>
+        </div>
+      )
+    }
+  </div>
+  <div class="pcard__body">
+    <div class="pcard__meta">
+      <StatusBadge status={p.status} />
+      <span class="eyebrow">{categoryLabels[p.category]} · {p.industry}</span>
+    </div>
+    <h3 class="pcard__title">
+      <a href={`/projects/${project.id}`}>{p.title}</a>
+    </h3>
+    <p class="pcard__type muted">{p.type}</p>
+    <dl class="pcard__dl">
+      <div><dt>Задача</dt><dd>{p.challenge}</dd></div>
+      <div><dt>Решение</dt><dd>{p.solution}</dd></div>
+    </dl>
+    {
+      p.stack.length > 0 && (
+        <ul class="pcard__stack" aria-label="Технологии">
+          {p.stack.map(t => (
+            <li>{t}</li>
+          ))}
+        </ul>
+      )
+    }
+    <span class="pcard__more" aria-hidden="true">Смотреть кейс →</span>
+  </div>
+</article>
+
+<style>
+  .pcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition:
+      border-color 0.3s,
+      transform 0.5s var(--ease);
+  }
+  .pcard:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-4px);
+  }
+  .pcard:focus-within {
+    border-color: var(--accent);
+  }
+  .pcard__media {
+    aspect-ratio: 16 / 9;
+    background: var(--surface-2);
+    overflow: hidden;
+  }
+  .pcard__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease);
+  }
+  .pcard:hover .pcard__media :global(img) {
+    transform: scale(1.03);
+  }
+  .pcard__fallback {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: var(--s-5);
+    background: radial-gradient(circle at 75% 20%, rgba(255, 90, 43, 0.25), transparent 55%), var(--surface-2);
+    font-size: clamp(24px, 3vw, 40px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    text-align: center;
+  }
+  .pcard__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-5);
+    flex: 1;
+  }
+  .pcard__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-3);
+    align-items: center;
+  }
+  .pcard__title {
+    font-size: clamp(22px, 2vw, 28px);
+  }
+  .pcard__title a {
+    text-decoration: none;
+  }
+  .pcard__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .pcard__title a:focus-visible {
+    outline: none;
+  }
+  .pcard__dl {
+    display: grid;
+    gap: var(--s-3);
+    margin: 0;
+  }
+  .pcard__dl dt {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pcard__dl dd {
+    margin: 2px 0 0;
+    color: var(--text-2);
+    font-size: var(--fs-small);
+  }
+  .pcard__stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pcard__stack li {
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(239, 234, 224, 0.06);
+    font-size: 13px;
+    color: var(--text-2);
+  }
+  .pcard__more {
+    margin-top: auto;
+    padding-top: var(--s-2);
+    font-weight: 500;
+  }
+</style>

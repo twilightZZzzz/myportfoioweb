@@ -1,0 +1,323 @@
+---
+import Button from './Button.astro';
+import { mainNav, isActive } from '../data/nav';
+import { services } from '../data/services';
+import { siteConfig } from '../data/site';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const brand = siteConfig.brand || siteConfig.name || 'Имя не указано';
+---
+
+<header class="header" data-header>
+  <div class="container header__row">
+    <a href="/" class="header__brand" aria-label={`${brand} — на главную`}>
+      <span class="header__mark" aria-hidden="true"></span>
+      <span>{brand}</span>
+    </a>
+
+    <nav class="header__nav" aria-label="Основная навигация">
+      <ul>
+        {
+          mainNav.map(item => (
+            <li>
+              <a href={item.href} aria-current={isActive(path, item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      <Button href="/contact" size="sm" class="header__cta" data-magnetic>Обсудить проект</Button>
+      <button class="header__burger" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-open>
+        <span class="sr-only">Открыть меню</span>
+        <span class="burger" aria-hidden="true"><i></i><i></i></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Меню" hidden data-menu>
+  <div class="menu__top container">
+    <span class="eyebrow">Меню</span>
+    <button class="menu__close" type="button" data-menu-close>
+      <span class="sr-only">Закрыть меню</span>
+      <span aria-hidden="true">✕</span>
+    </button>
+  </div>
+  <nav class="container menu__nav" aria-label="Мобильная навигация">
+    <ul class="menu__main">
+      <li><a href="/" aria-current={path === '/' ? 'page' : undefined}>Главная</a></li>
+      {
+        mainNav.map(item => (
+          <li>
+            <a href={item.href} aria-current={isActive(path, item.href) ? 'page' : undefined}>
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="eyebrow menu__label">Услуги</p>
+    <ul class="menu__sub">
+      {
+        services.map(s => (
+          <li>
+            <a href={`/services/${s.slug}`}>{s.title}</a>
+          </li>
+        ))
+      }
+    </ul>
+    <Button href="/contact" size="lg" class="menu__cta">Обсудить проект</Button>
+  </nav>
+</div>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11, 11, 12, 0.78);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color 0.3s,
+      transform 0.6s var(--ease);
+  }
+  .header.is-hidden:not(:focus-within) {
+    transform: translateY(-100%);
+  }
+  .header.is-scrolled {
+    border-bottom-color: var(--line);
+  }
+  .header__row {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-5);
+  }
+  .header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    min-height: 44px;
+  }
+  .header__mark {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .header__nav ul {
+    display: flex;
+    gap: var(--s-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .header__nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 var(--s-3);
+    border-radius: 99px;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: var(--fs-small);
+    transition:
+      color 0.2s,
+      background 0.2s;
+  }
+  .header__nav a:hover {
+    color: var(--text);
+    background: rgba(239, 234, 224, 0.06);
+  }
+  .header__nav a[aria-current='page'] {
+    color: var(--text);
+  }
+  .header__nav a[aria-current='page']::after {
+    content: '';
+    width: 5px;
+    height: 5px;
+    margin-left: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+  }
+  .header__burger {
+    display: none;
+    width: 48px;
+    height: 48px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+    background: none;
+    cursor: pointer;
+    place-items: center;
+  }
+  .burger {
+    display: grid;
+    gap: 6px;
+    width: 18px;
+  }
+  .burger i {
+    display: block;
+    height: 1.5px;
+    background: currentColor;
+  }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: var(--bg);
+    overflow-y: auto;
+    padding-bottom: calc(var(--s-6) + env(safe-area-inset-bottom));
+  }
+  .menu[hidden] {
+    display: none;
+  }
+  .menu__top {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu__close {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--line-strong);
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  .menu__main,
+  .menu__sub {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .menu__main a {
+    display: block;
+    padding: 10px 0;
+    font-size: clamp(30px, 9vw, 44px);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .menu__main a[aria-current='page'] {
+    color: var(--accent);
+  }
+  .menu__label {
+    margin: var(--s-6) 0 var(--s-2);
+  }
+  .menu__sub a {
+    display: block;
+    padding: 10px 0;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 18px;
+  }
+  .menu__cta {
+    margin-top: var(--s-6);
+    width: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .menu:not([hidden]) {
+      animation: menu-in 0.45s var(--ease);
+    }
+    @keyframes menu-in {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+    }
+  }
+
+  @media (max-width: 920px) {
+    .header__nav {
+      display: none;
+    }
+    .header__burger {
+      display: grid;
+    }
+  }
+  @media (max-width: 480px) {
+    .header__actions :global(.header__cta) {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const openBtn = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const closeBtn = document.querySelector<HTMLButtonElement>('[data-menu-close]');
+  const header = document.querySelector<HTMLElement>('[data-header]');
+
+  if (openBtn && menu && closeBtn) {
+    const focusables = () =>
+      [...menu.querySelectorAll<HTMLElement>('a[href], button:not([disabled])')].filter(el => el.offsetParent !== null);
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+      if (e.key !== 'Tab') return;
+      const items = focusables();
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (!first || !last) return;
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    function open() {
+      menu!.hidden = false;
+      openBtn!.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      dispatchEvent(new Event('scroll-lock'));
+      document.addEventListener('keydown', onKey);
+      closeBtn!.focus();
+    }
+    function close() {
+      menu!.hidden = true;
+      openBtn!.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      dispatchEvent(new Event('scroll-unlock'));
+      document.removeEventListener('keydown', onKey);
+      openBtn!.focus();
+    }
+
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    menu.addEventListener('click', e => {
+      if ((e.target as HTMLElement).closest('a')) close();
+    });
+    matchMedia('(min-width: 921px)').addEventListener('change', e => {
+      if (e.matches && !menu.hidden) close();
+    });
+  }
+
+  if (header) {
+    const onScroll = () => header.classList.toggle('is-scrolled', scrollY > 8);
+    onScroll();
+    addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

@@ -1,0 +1,59 @@
+---
+import Breadcrumbs from './Breadcrumbs.astro';
+
+interface Props {
+  title: string;
+  lead?: string;
+  eyebrow?: string;
+  crumbs?: { href?: string; label: string }[];
+}
+const { title, lead, eyebrow, crumbs } = Astro.props;
+---
+
+<section class="phero" data-glow data-page-hero>
+  <div class="container phero__inner">
+    {crumbs && <div data-hero-fade><Breadcrumbs items={crumbs} /></div>}
+    {eyebrow && <p class="label" data-scramble>{eyebrow}</p>}
+    <h1 class="phero__title" data-split-hero>{title}</h1>
+    {lead && <p class="lead" data-hero-fade>{lead}</p>}
+    {
+      Astro.slots.has('default') && (
+        <div class="phero__actions" data-hero-fade>
+          <slot />
+        </div>
+      )
+    }
+  </div>
+  <span class="corner corner--tl" aria-hidden="true"></span><span class="corner corner--tr" aria-hidden="true"></span>
+  <span class="corner corner--bl" aria-hidden="true"></span><span class="corner corner--br" aria-hidden="true"></span>
+</section>
+
+<style>
+  .phero {
+    --gx: 80%;
+    --gy: 0%;
+    position: relative;
+    padding: clamp(var(--s-7), 8vw, var(--s-10)) 0 clamp(var(--s-7), 7vw, var(--s-9));
+    overflow: hidden;
+    background: radial-gradient(900px circle at var(--gx) var(--gy), rgba(255, 90, 43, 0.2), transparent 60%);
+    transition: background-position 0.2s;
+    border-bottom: 1px solid var(--line);
+  }
+  .phero__inner {
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+  }
+  .phero__title {
+    font-size: clamp(40px, 6.4vw, 108px);
+    line-height: 0.92;
+    letter-spacing: -0.055em;
+    max-width: 1200px;
+  }
+  .phero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    margin-top: var(--s-2);
+  }
+</style>

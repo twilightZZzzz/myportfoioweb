@@ -1,0 +1,50 @@
+---
+import Button from './Button.astro';
+
+interface Props {
+  title?: string;
+  text?: string;
+  cta?: string;
+}
+const {
+  title = 'Расскажите о вашей задаче',
+  text = 'Опишите, что нужно сделать, — отвечу, задам уточняющие вопросы и предложу варианты решения.',
+  cta = 'Обсудить проект',
+} = Astro.props;
+---
+
+<section class="section cta-wrap" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta" data-reveal data-glow>
+      <h2 id="cta-title" class="h2">{title}</h2>
+      <p class="lead">{text}</p>
+      <div class="cta__actions">
+        <Button href="/contact" size="lg" arrow>{cta}</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    --gx: 70%;
+    --gy: 30%;
+    display: grid;
+    gap: var(--s-5);
+    justify-items: start;
+    padding: clamp(var(--s-6), 6vw, var(--s-9));
+    border-radius: calc(var(--radius-lg) + 6px);
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(600px circle at var(--gx) var(--gy), rgba(255, 90, 43, 0.16), transparent 60%),
+      var(--surface);
+  }
+  .cta .h2 {
+    max-width: 760px;
+  }
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+  }
+</style>

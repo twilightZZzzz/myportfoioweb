@@ -1,0 +1,145 @@
+---
+import type { Step } from '../data/types';
+
+interface Props {
+  steps: Step[];
+  /** Подпись для скринридеров */
+  label: string;
+}
+const { steps, label } = Astro.props;
+---
+
+<ol class="flow" aria-label={label} data-reveal style={`--n:${steps.length}`}>
+  {
+    steps.map((s, i) => (
+      <li class="flow__node" style={`--i:${i}`}>
+        <span class="flow__dot" aria-hidden="true">
+          {String(i + 1).padStart(2, '0')}
+        </span>
+        <span class="flow__label">{s.label}</span>
+        {s.note && <span class="flow__note">{s.note}</span>}
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .flow {
+    --gap: var(--s-4);
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: var(--gap);
+  }
+  /* линия, по которой бежит импульс */
+  .flow::before,
+  .flow::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    right: 28px;
+    top: 27px;
+    height: 2px;
+    background: var(--line-strong);
+  }
+  .flow::after {
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    background-size: 30% 100%;
+    background-repeat: no-repeat;
+    animation: flow-pulse 3.6s linear infinite;
+  }
+  @keyframes flow-pulse {
+    from {
+      background-position: -40% 0;
+    }
+    to {
+      background-position: 140% 0;
+    }
+  }
+  .flow__node {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .flow__dot {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    font-family: var(--f-mono);
+    font-size: 13px;
+    color: var(--accent);
+    transition:
+      border-color 0.6s,
+      box-shadow 0.6s;
+    transition-delay: calc(var(--i) * 180ms + 300ms);
+  }
+  :global(.is-in) .flow__dot {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 6px var(--accent-soft);
+  }
+  .flow__label {
+    margin-top: var(--s-2);
+    font-size: clamp(17px, 1.4vw, 20px);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .flow__note {
+    color: var(--text-2);
+    font-size: var(--fs-small);
+  }
+
+  @media (max-width: 860px) {
+    .flow {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--s-5);
+    }
+    .flow::before,
+    .flow::after {
+      left: 27px;
+      right: auto;
+      top: 28px;
+      bottom: 28px;
+      width: 2px;
+      height: auto;
+    }
+    .flow::after {
+      background: linear-gradient(180deg, transparent, var(--accent), transparent);
+      background-size: 100% 30%;
+      background-repeat: no-repeat;
+      animation-name: flow-pulse-v;
+    }
+    @keyframes flow-pulse-v {
+      from {
+        background-position: 0 -40%;
+      }
+      to {
+        background-position: 0 140%;
+      }
+    }
+    .flow__node {
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      column-gap: var(--s-4);
+      align-items: center;
+    }
+    .flow__dot {
+      grid-row: span 2;
+    }
+    .flow__label {
+      margin-top: 0;
+    }
+    .flow__note {
+      grid-column: 2;
+    }
+  }
+</style>

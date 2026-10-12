@@ -1,0 +1,394 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import FlowDiagram from '../../components/FlowDiagram.astro';
+import ChatMock from '../../components/ChatMock.astro';
+import ProcessSteps from '../../components/ProcessSteps.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBlock from '../../components/CtaBlock.astro';
+import { services } from '../../data/services';
+import type { Service, ServiceSlug } from '../../data/types';
+import { getProjectsByCategory } from '../../lib/projects';
+
+export const getStaticPaths = (() => services.map(service => ({ params: { slug: service.slug }, props: { service } }))) satisfies GetStaticPaths;
+
+interface Props {
+  service: Service;
+}
+const { service: s } = Astro.props;
+const projects = await getProjectsByCategory(s.projectCategory);
+const presets: Record<ServiceSlug, string> = {
+  'web-development': 'site',
+  automation: 'automation',
+  'telegram-bots': 'bot',
+  'ai-solutions': 'ai',
+};
+const contactHref = `/contact?type=${presets[s.slug]}`;
+const others = services.filter(o => o.slug !== s.slug);
+const serviceLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: s.title,
+  description: s.seo.description,
+  areaServed: { '@type': 'Country', name: 'Россия' },
+};
+---
+
+<Base title={s.seo.title} description={s.seo.description} jsonLd={serviceLd}>
+  <PageHero title={s.hero.h1} lead={s.hero.lead} crumbs={[{ href: '/services', label: 'Услуги' }, { label: s.title }]}>
+    <Button href={contactHref} arrow>Обсудить задачу</Button>
+    {projects.length > 0 && <Button href="#demo" variant="secondary">Смотреть примеры</Button>}
+  </PageHero>
+
+  {
+    s.solutionTypes && (
+      <section class="section" aria-labelledby="types-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="types-title" class="h2">{s.solutionTypes.title}</h2>
+          </div>
+          <div class="types">
+            {s.solutionTypes.items.map((t, i) => (
+              <article class="card type" data-reveal style={`--i:${i % 2}`}>
+                <h3>{t.title}</h3>
+                <p class="type__purpose">{t.purpose}</p>
+                <dl class="type__dl">
+                  <div>
+                    <dt class="eyebrow">Кому подходит</dt>
+                    <dd>{t.audience}</dd>
+                  </div>
+                  <div>
+                    <dt class="eyebrow">Что входит</dt>
+                    <dd>
+                      <ul class="dash-list">
+                        {t.includes.map(x => (
+                          <li>{x}</li>
+                        ))}
+                      </ul>
+                    </dd>
+                  </div>
+                  {t.features && (
+                    <div>
+                      <dt class="eyebrow">Можно добавить</dt>
+                      <dd>
+                        <ul class="dash-list">
+                          {t.features.map(x => (
+                            <li>{x}</li>
+                          ))}
+                        </ul>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.scenarios && (
+      <section class="section" aria-labelledby="scen-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="scen-title" class="h2">{s.scenarios.title}</h2>
+            {s.scenarios.lead && <p class="lead">{s.scenarios.lead}</p>}
+          </div>
+          <div class="grid-3">
+            {s.scenarios.items.map((sc, i) => (
+              <article class="card" data-reveal style={`--i:${i % 3}`}>
+                <h3>{sc.title}</h3>
+                <p style="margin-top:12px">{sc.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.flow && (
+      <section class="section" aria-labelledby="flow-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="flow-title" class="h2">{s.flow.title}</h2>
+            {s.flow.lead && <p class="lead">{s.flow.lead}</p>}
+          </div>
+          <FlowDiagram steps={s.flow.steps} label={s.flow.title} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.dialog && (
+      <section class="section" aria-labelledby="dialog-title">
+        <div class="container split">
+          <div class="section-head">
+            <h2 id="dialog-title" class="h2">{s.dialog.title}</h2>
+            {s.dialog.lead && <p class="lead">{s.dialog.lead}</p>}
+          </div>
+          <ChatMock messages={s.dialog.messages} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.capabilities && (
+      <section class="section" aria-labelledby="cap-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="cap-title" class="h2">{s.capabilities.title}</h2>
+          </div>
+          <div class="grid-3">
+            {s.capabilities.items.map((c, i) => (
+              <article class="card" data-reveal style={`--i:${i % 3}`}>
+                <h3>{c.title}</h3>
+                <p style="margin-top:12px">{c.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    s.integrations && (
+      <section class="section" aria-labelledby="int-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="int-title" class="h2">{s.integrations.title}</h2>
+            {s.integrations.lead && <p class="lead">{s.integrations.lead}</p>}
+          </div>
+          <ul class="int">
+            {s.integrations.items.map(it => (
+              <li>
+                <b>{it.title}</b>
+                <span class="text-2">{it.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    (s.limits || s.security) && (
+      <section class="section" aria-label="Границы и безопасность">
+        <div class="container grid-2">
+          {s.limits && (
+            <div class="note" data-reveal>
+              <h2 class="h3">{s.limits.title}</h2>
+              {s.limits.lead && <p class="text-2">{s.limits.lead}</p>}
+              <ul class="dash-list">
+                {s.limits.items.map(x => (
+                  <li>{x}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {s.security && (
+            <div class="note" data-reveal style="--i:1">
+              <h2 class="h3">{s.security.title}</h2>
+              <ul class="dash-list">
+                {s.security.items.map(x => (
+                  <li>{x}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section" aria-labelledby="proc-title">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="proc-title" class="h2">{s.process.title}</h2>
+      </div>
+      <ProcessSteps steps={s.process.steps} />
+    </div>
+  </section>
+
+  {
+    s.pricingFactors && (
+      <section class="section" aria-labelledby="price-title">
+        <div class="container split">
+          <div class="section-head">
+            <h2 id="price-title" class="h2">{s.pricingFactors.title}</h2>
+            <p class="lead">Точную оценку называю после обсуждения задачи — с составом работ и сроками.</p>
+          </div>
+          <ol class="factors">
+            {s.pricingFactors.items.map(x => (
+              <li>{x}</li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    projects.length > 0 && (
+      <section class="section" id="demo" aria-labelledby="demo-title">
+        <div class="container">
+          <div class="section-head">
+            <h2 id="demo-title" class="h2">
+              Примеры
+            </h2>
+          </div>
+          <div class="grid-2">
+            {projects.map((p, i) => (
+              <ProjectCard project={p} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section">
+    <div class="container">
+      <FaqList items={s.faq} />
+    </div>
+  </section>
+
+  <section class="section others" aria-labelledby="others-title">
+    <div class="container">
+      <h2 id="others-title" class="eyebrow">Другие услуги</h2>
+      <ul>
+        {
+          others.map(o => (
+            <li>
+              <a href={`/services/${o.slug}`}>
+                {o.title} <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBlock title="Обсудим вашу задачу?" text="Расскажите, что нужно сделать. Отвечу, задам уточняющие вопросы и предложу варианты решения." />
+</Base>
+
+<style>
+  .types {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+  .type {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+  }
+  .type__purpose {
+    font-size: 18px;
+    color: var(--text) !important;
+  }
+  .type__dl {
+    display: grid;
+    gap: var(--s-4);
+    margin: 0;
+  }
+  .type__dl dd {
+    margin: var(--s-2) 0 0;
+    color: var(--text-2);
+  }
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--s-7);
+    align-items: start;
+  }
+  .split .section-head {
+    margin-bottom: 0;
+  }
+  .int {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 0 var(--s-6);
+  }
+  .int li {
+    display: grid;
+    gap: 4px;
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .note {
+    display: grid;
+    gap: var(--s-4);
+    align-content: start;
+    padding: var(--s-6);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-lg);
+  }
+  .factors {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: f;
+    border-top: 1px solid var(--line);
+  }
+  .factors li {
+    counter-increment: f;
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    padding: var(--s-4) 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 18px;
+  }
+  .factors li::before {
+    content: counter(f, decimal-leading-zero);
+    font-family: var(--f-mono);
+    font-size: var(--fs-mono);
+    color: var(--accent);
+    padding-top: 5px;
+  }
+  .others {
+    padding-block: var(--s-7);
+  }
+  .others ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-3);
+    list-style: none;
+    margin: var(--s-4) 0 0;
+    padding: 0;
+  }
+  .others a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 20px;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+  .others a:hover {
+    border-color: var(--accent);
+  }
+  @media (max-width: 860px) {
+    .types,
+    .split {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

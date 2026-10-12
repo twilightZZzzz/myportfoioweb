@@ -1,0 +1,169 @@
+---
+import ContactForm from './ContactForm.astro';
+import { siteConfig, telegramUrl } from '../data/site';
+
+interface Props {
+  /** Основная часть заголовка */
+  title?: string;
+  /** Акцентное окончание заголовка (курсивом) */
+  accent?: string;
+  label?: string;
+  text?: string;
+  headingLevel?: 'h1' | 'h2';
+  preset?: Parameters<typeof ContactForm>[0]['preset'];
+}
+const {
+  title = 'Запустим что-то',
+  accent = 'вместе?',
+  label = 'Финальная сцена',
+  text = 'Опишите в паре предложений, что нужно сделать. Отвечу выбранным способом связи, задам уточняющие вопросы и предложу варианты решения.',
+  headingLevel: H = 'h2',
+  preset,
+} = Astro.props;
+const tg = telegramUrl(siteConfig.contacts.telegram);
+const { email } = siteConfig.contacts;
+---
+
+<section class="lead-section" id="lead" aria-labelledby="lead-title" data-finale>
+  <div class="lead-section__glow" data-finale-glow aria-hidden="true"></div>
+  <div class="container">
+    <p class="label" data-scramble><b>(∞)</b> {label}</p>
+    <H id="lead-title" class="finale-title" data-split>{title}{accent && ' '}{accent && <em>{accent}</em>}</H>
+
+    <div class="lead-section__grid">
+      <div class="lead-section__intro">
+        <p class="lead">{text}</p>
+        {
+          (tg || email) && (
+            <ul class="lead-section__contacts">
+              {tg && (
+                <li>
+                  <span class="eyebrow">Telegram</span>
+                  <a href={tg} target="_blank" rel="noopener" data-cursor="Написать">
+                    @{siteConfig.contacts.telegram!.replace(/^@/, '')}
+                  </a>
+                </li>
+              )}
+              {email && (
+                <li>
+                  <span class="eyebrow">Email</span>
+                  <a href={`mailto:${email}`} data-cursor="Написать">
+                    {email}
+                  </a>
+                </li>
+              )}
+            </ul>
+          )
+        }
+        <p class="muted lead-section__geo"><span class="dot" aria-hidden="true"></span>{siteConfig.city} · работаю {siteConfig.workArea}</p>
+      </div>
+      <div class="lead-section__form card">
+        <ContactForm preset={preset} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .lead-section {
+    position: relative;
+    padding-block: var(--section);
+    border-top: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .lead-section__glow {
+    position: absolute;
+    right: -20vmax;
+    top: -10vmax;
+    width: 80vmax;
+    height: 80vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 90, 43, 0.28), transparent 60%);
+    pointer-events: none;
+  }
+  .finale-title {
+    position: relative;
+    margin: var(--s-5) 0 clamp(var(--s-7), 6vw, var(--s-9));
+    font-size: clamp(52px, 11vw, 200px);
+    line-height: 0.88;
+    letter-spacing: -0.065em;
+    font-weight: 600;
+  }
+  .finale-title em {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    font-size: 1.06em;
+  }
+  .lead-section__grid {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr);
+    gap: clamp(var(--s-6), 5vw, var(--s-9));
+    align-items: start;
+  }
+  .lead-section__intro {
+    display: grid;
+    gap: var(--s-5);
+    position: sticky;
+    top: calc(var(--header-h) + var(--s-5));
+  }
+  .lead-section__contacts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-4);
+  }
+  .lead-section__contacts li {
+    display: grid;
+    gap: 2px;
+  }
+  .lead-section__contacts a {
+    font-size: clamp(22px, 2.4vw, 34px);
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    width: fit-content;
+    border-bottom: 1px solid var(--line-strong);
+    transition: border-color 0.3s;
+  }
+  .lead-section__contacts a:hover {
+    border-color: var(--accent);
+  }
+  .lead-section__geo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 0 0 rgba(98, 211, 148, 0.6);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 8px rgba(98, 211, 148, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(98, 211, 148, 0);
+    }
+  }
+  .lead-section__form {
+    background: rgba(19, 19, 18, 0.82);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+  @media (max-width: 960px) {
+    .lead-section__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .lead-section__intro {
+      position: static;
+    }
+  }
+</style>

@@ -1,0 +1,117 @@
+---
+import type { FAQ } from '../data/types';
+
+interface Props {
+  items: FAQ[];
+  title?: string;
+  /** Добавить разметку FAQPage для поисковиков */
+  schema?: boolean;
+}
+const { items, title = 'Частые вопросы', schema = true } = Astro.props;
+const ld = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map(i => ({ '@type': 'Question', name: i.q, acceptedAnswer: { '@type': 'Answer', text: i.a } })),
+};
+---
+
+<div class="faq">
+  <h2 class="h2 faq__title">{title}</h2>
+  <div class="faq__list">
+    {
+      items.map(item => (
+        <details class="faq__item">
+          <summary>
+            <span>{item.q}</span>
+            <span class="faq__icon" aria-hidden="true" />
+          </summary>
+          <p>{item.a}</p>
+        </details>
+      ))
+    }
+  </div>
+</div>
+{schema && <script type="application/ld+json" set:html={JSON.stringify(ld)} />}
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr);
+    gap: var(--s-6);
+    align-items: start;
+  }
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+    min-height: 64px;
+    padding: var(--s-4) 0;
+    cursor: pointer;
+    list-style: none;
+    font-size: clamp(17px, 1.4vw, 20px);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary:hover {
+    color: var(--accent);
+  }
+  .faq__icon {
+    position: relative;
+    flex: 0 0 28px;
+    height: 28px;
+    border: 1px solid var(--line-strong);
+    border-radius: 50%;
+  }
+  .faq__icon::before,
+  .faq__icon::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 1.5px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s var(--ease);
+  }
+  .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  details[open] .faq__icon::after {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  .faq__item p {
+    padding: 0 var(--s-8) var(--s-5) 0;
+    color: var(--text-2);
+    max-width: 720px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    details[open] p {
+      animation: faq-in 0.4s var(--ease);
+    }
+    @keyframes faq-in {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
+  }
+  @media (max-width: 860px) {
+    .faq {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .faq__item p {
+      padding-right: 0;
+    }
+  }
+</style>

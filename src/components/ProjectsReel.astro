@@ -1,0 +1,196 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import StatusBadge from './StatusBadge.astro';
+import CaseVideo from './CaseVideo.astro';
+import { categoryLabels, type Project } from '../lib/projects';
+
+interface Props {
+  projects: Project[];
+}
+const { projects } = Astro.props;
+---
+
+<section class="reel-section" aria-labelledby="reel-title">
+  <div class="container reel-head">
+    <p class="label" data-scramble><b>(03)</b> Проекты</p>
+    <h2 id="reel-title" class="h2" data-split>Проекты: от интерфейса <em>до логики</em></h2>
+  </div>
+  <div class="reel" data-reel>
+    <div class="reel__track" data-reel-track>
+      {
+        projects.map((p, i) => (
+          <a class="reel-card" href={`/projects/${p.id}`} data-cursor="Смотреть" data-curtain-label={p.data.title}>
+            <div class="reel-card__media">
+              <span class="reel-card__n">
+                {String(i + 1).padStart(2, '0')} / {String(projects.length).padStart(2, '0')}
+              </span>
+              <div class="reel-card__img" data-reel-media>
+                {p.data.video ? (
+                  <CaseVideo mp4={p.data.video.mp4Small ?? p.data.video.mp4} poster={p.data.video.poster} label={p.data.video.label} />
+                ) : p.data.cover ? (
+                  <Image src={p.data.cover.src} alt={p.data.cover.alt} widths={[640, 960, 1400]} sizes="(max-width: 899px) 100vw, 60vw" />
+                ) : (
+                  <span class="reel-card__fallback">{p.data.title}</span>
+                )}
+              </div>
+            </div>
+            <div class="reel-card__meta">
+              <h3 class="reel-card__title">
+                <span>{p.data.title}</span>
+              </h3>
+              <StatusBadge status={p.data.status} />
+            </div>
+            <p class="reel-card__line">
+              {categoryLabels[p.data.category]} · {p.data.industry} — {p.data.summary}
+            </p>
+          </a>
+        ))
+      }
+      <div class="reel-end">
+        <p>
+          Следующий проект
+          <br />
+          может быть <em>вашим</em>
+        </p>
+        <Button href="/contact" data-magnetic arrow>
+          Обсудить проект
+        </Button>
+        <Button href="/projects" variant="ghost" arrow>
+          Все проекты
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .reel-section {
+    padding-top: var(--section);
+    border-top: 1px solid var(--line);
+  }
+  .reel-head {
+    display: grid;
+    gap: var(--s-4);
+    margin-bottom: clamp(var(--s-6), 5vw, var(--s-8));
+  }
+  .reel {
+    overflow: hidden;
+  }
+  .reel__track {
+    display: flex;
+    gap: clamp(20px, 3vw, 48px);
+    width: max-content;
+    padding: 0 var(--gutter) var(--section);
+  }
+  .reel-card {
+    display: block;
+    width: min(62vw, 960px, calc((100vh - 240px) * 1.78));
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+  .reel-card__media {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--surface-2);
+  }
+  .reel-card__img {
+    height: 100%;
+  }
+  .reel-card__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 1.1s var(--ease);
+  }
+  .reel-card:hover .reel-card__img :global(img) {
+    transform: scale(1.05);
+  }
+  .reel-card__fallback {
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-size: clamp(32px, 4vw, 64px);
+    font-weight: 600;
+    letter-spacing: -0.05em;
+    background: radial-gradient(circle at 75% 20%, rgba(255, 90, 43, 0.3), transparent 55%), var(--surface-2);
+  }
+  .reel-card__n {
+    position: absolute;
+    left: 14px;
+    top: 12px;
+    z-index: 2;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    mix-blend-mode: difference;
+  }
+  .reel-card__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-4);
+    padding-top: var(--s-4);
+  }
+  .reel-card__title {
+    font-size: clamp(30px, 3.6vw, 56px);
+    letter-spacing: -0.05em;
+  }
+  .reel-card__title span {
+    display: inline-block;
+    transition: transform 0.6s var(--ease);
+  }
+  .reel-card:hover .reel-card__title span {
+    transform: translateX(10px);
+  }
+  .reel-card__line {
+    margin-top: var(--s-2);
+    max-width: 620px;
+    color: var(--text-2);
+  }
+  .reel-end {
+    width: min(38vw, 520px);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--s-4);
+  }
+  .reel-end p {
+    font-size: clamp(30px, 3.2vw, 50px);
+    letter-spacing: -0.045em;
+    line-height: 1.02;
+    font-weight: 500;
+  }
+  .reel-end em {
+    font-family: var(--f-serif);
+    font-style: italic;
+    color: var(--accent);
+  }
+  @media (min-width: 900px) {
+    .reel {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .reel__track {
+      padding-bottom: 0;
+    }
+  }
+  @media (max-width: 899px) {
+    .reel__track {
+      flex-direction: column;
+      width: auto;
+    }
+    .reel-card,
+    .reel-end {
+      width: 100%;
+    }
+    .reel-card__meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

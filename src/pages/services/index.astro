@@ -1,0 +1,116 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Button from '../../components/Button.astro';
+import ServiceCard from '../../components/ServiceCard.astro';
+import FlowDiagram from '../../components/FlowDiagram.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBlock from '../../components/CtaBlock.astro';
+import { services } from '../../data/services';
+import { generalFaq } from '../../data/faq';
+import { servicesTogether } from '../../data/home';
+import { getProjects } from '../../lib/projects';
+
+const projects = await getProjects();
+const byService = services
+  .map(s => ({ service: s, items: projects.filter(p => p.data.category === s.projectCategory).slice(0, 2) }))
+  .filter(g => g.items.length > 0);
+const faq = generalFaq.filter(f => /стоит|сроки|интеграции|поддержка/i.test(f.q));
+---
+
+<Base
+  title="Разработка сайтов и цифровых решений"
+  description="Сайты, автоматизация обработки заявок, Telegram-боты и ИИ-функции для бизнеса. Как услуги работают вместе и с чего начать."
+>
+  <PageHero
+    title="Разработка сайтов и цифровых решений"
+    lead="Бизнесу редко нужен «просто сайт». Нужно, чтобы клиент понял предложение, оставил заявку, а менеджер быстро её получил и обработал. Я помогаю собрать эту цепочку целиком или закрыть отдельное звено."
+    crumbs={[{ label: 'Услуги' }]}
+  >
+    <Button href="/contact" arrow>Обсудить проект</Button>
+  </PageHero>
+
+  <section class="section" aria-label="Список услуг">
+    <div class="container">
+      <div class="services-list">
+        {services.map((s, i) => <ServiceCard service={s} index={i} headingLevel="h2" />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="together-title">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Как услуги работают вместе</p>
+        <h2 id="together-title" class="h2">От первого визита до ответа клиенту</h2>
+        <p class="lead">Сайт, автоматизация и бот — части одной системы. Можно начать с любой и подключать остальные по мере необходимости.</p>
+      </div>
+      <FlowDiagram steps={servicesTogether} label="Путь обращения: сайт, заявка, обработка, уведомление, дальнейшие действия" />
+    </div>
+  </section>
+
+  {
+    byService.length > 0 && (
+      <section class="section" aria-labelledby="examples-title">
+        <div class="container">
+          <div class="section-head">
+            <p class="eyebrow">Примеры</p>
+            <h2 id="examples-title" class="h2">
+              Проекты по направлениям
+            </h2>
+          </div>
+          {byService.map(g => (
+            <div class="examples">
+              <h3 class="h3">
+                <a href={`/services/${g.service.slug}`}>{g.service.title}</a>
+              </h3>
+              <div class="grid-2">
+                {g.items.map((p, i) => (
+                  <ProjectCard project={p} index={i} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section">
+    <div class="container">
+      <FaqList items={faq} />
+    </div>
+  </section>
+
+  <CtaBlock title="Не уверены, с чего начать?" text="Опишите задачу своими словами — подскажу, какое решение подойдёт и что можно сделать первым шагом." />
+</Base>
+
+<style>
+  .services-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-4);
+  }
+  .services-list > :global(.svc--primary) {
+    grid-column: 1 / -1;
+  }
+  .examples {
+    display: grid;
+    gap: var(--s-5);
+  }
+  .examples + .examples {
+    margin-top: var(--s-8);
+  }
+  .examples h3 a {
+    text-decoration: none;
+  }
+  .examples h3 a:hover {
+    color: var(--accent);
+  }
+  @media (max-width: 860px) {
+    .services-list {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

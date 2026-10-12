@@ -1,0 +1,219 @@
+---
+import { mainNav } from '../data/nav';
+import { services } from '../data/services';
+import { siteConfig, telegramUrl } from '../data/site';
+
+interface Props {
+  /** Титры «в ролях» — на главной */
+  credits?: boolean;
+}
+const { credits = false } = Astro.props;
+const { contacts } = siteConfig;
+const tg = telegramUrl(contacts.telegram);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container">
+    {
+      credits && (
+        <div class="credits" data-credits>
+          <p class="label" data-credit>
+            В ролях
+          </p>
+          <dl>
+            <div data-credit>
+              <dt>Разработка и дизайн</dt>
+              <dd>{siteConfig.name}</dd>
+            </div>
+            <div data-credit>
+              <dt>Место съёмок</dt>
+              <dd>
+                {siteConfig.city} · {siteConfig.workArea}
+              </dd>
+            </div>
+            <div data-credit>
+              <dt>Типографика</dt>
+              <dd>Inter Tight, Cormorant Garamond</dd>
+            </div>
+            <div data-credit>
+              <dt>Свет и движение</dt>
+              <dd>GSAP, Lenis</dd>
+            </div>
+            <div data-credit>
+              <dt>Особая благодарность</dt>
+              <dd>Вам — за то, что досмотрели до титров</dd>
+            </div>
+          </dl>
+        </div>
+      )
+    }
+    <div class="footer__grid">
+      <div class="footer__about">
+        <p class="footer__name">{siteConfig.name || 'Имя не указано'}</p>
+        <p class="muted">{siteConfig.role}. {siteConfig.city}, работаю {siteConfig.workArea}.</p>
+      </div>
+
+      <nav aria-label="Разделы сайта">
+        <p class="eyebrow">Разделы</p>
+        <ul>
+          <li><a href="/">Главная</a></li>
+          {
+            mainNav.map(i => (
+              <li>
+                <a href={i.href}>{i.label}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav aria-label="Услуги">
+        <p class="eyebrow">Услуги</p>
+        <ul>
+          {
+            services.map(s => (
+              <li>
+                <a href={`/services/${s.slug}`}>{s.title}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div>
+        <p class="eyebrow">Связаться</p>
+        <ul>
+          {
+            tg && (
+              <li>
+                <a href={tg} rel="noopener" target="_blank">
+                  Telegram @{contacts.telegram!.replace(/^@/, '')}
+                </a>
+              </li>
+            )
+          }
+          {
+            contacts.email && (
+              <li>
+                <a href={`mailto:${contacts.email}`}>{contacts.email}</a>
+              </li>
+            )
+          }
+          <li><a href="/contact">Форма заявки</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {year} {siteConfig.name}</span>
+      <a href="/privacy">Политика обработки персональных данных</a>
+      <button type="button" class="footer__grid-toggle" data-grid-toggle aria-pressed="false">
+        Показать сетку <kbd>G</kbd>
+      </button>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .credits {
+    text-align: center;
+    padding-bottom: var(--s-9);
+    margin-bottom: var(--s-8);
+    border-bottom: 1px solid var(--line);
+  }
+  .credits dl {
+    margin: var(--s-6) auto 0;
+    max-width: 680px;
+    display: grid;
+    gap: var(--s-5);
+  }
+  .credits dt {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .credits dd {
+    margin: 6px 0 0;
+    font-size: clamp(22px, 2.6vw, 36px);
+    letter-spacing: -0.035em;
+  }
+  .footer {
+    border-top: 1px solid var(--line);
+    padding: var(--s-8) 0 calc(var(--s-5) + env(safe-area-inset-bottom));
+    font-size: var(--fs-small);
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+    gap: var(--s-6);
+  }
+  .footer__name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: var(--s-2);
+  }
+  .footer ul {
+    list-style: none;
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .footer ul a {
+    display: inline-flex;
+    min-height: 36px;
+    align-items: center;
+    color: var(--text-2);
+    text-decoration: none;
+  }
+  .footer ul a:hover {
+    color: var(--text);
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3) var(--s-5);
+    margin-top: var(--s-8);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+  .footer__bottom a {
+    color: var(--muted);
+  }
+  .footer__bottom a:hover {
+    color: var(--text);
+  }
+  .footer__grid-toggle {
+    background: none;
+    border: 0;
+    padding: 8px 0;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  .footer__grid-toggle:hover {
+    color: var(--text);
+  }
+  kbd {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 4px;
+  }
+  @media (max-width: 860px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .footer__about {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

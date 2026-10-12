@@ -1,0 +1,143 @@
+---
+import Icon from './Icon.astro';
+import type { Service } from '../data/types';
+
+interface Props {
+  service: Service;
+  index: number;
+  headingLevel?: 'h2' | 'h3';
+}
+const { service: s, index, headingLevel: H = 'h3' } = Astro.props;
+---
+
+<article class:list={['svc', { 'svc--primary': s.primary }]} data-reveal style={`--i:${index}`} data-glow data-tilt>
+  <div class="svc__main">
+    <div class="svc__top">
+      <span class="svc__icon"><Icon name={s.icon} /></span>
+      {s.primary && <span class="svc__tag">Основное направление</span>}
+    </div>
+    <H class="svc__title">
+      <a href={`/services/${s.slug}`} class="svc__link">{s.title}</a>
+    </H>
+    <p class="svc__text">{s.card.text}</p>
+  </div>
+  <div class="svc__side">
+    <ul class="dash-list svc__points">
+      {s.card.points.map(p => <li>{p}</li>)}
+    </ul>
+    <span class="svc__more" aria-hidden="true">Подробнее <span class="svc__arrow">→</span></span>
+  </div>
+</article>
+
+<style>
+  .svc {
+    --gx: 50%;
+    --gy: 0%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    padding: clamp(var(--s-5), 2.6vw, var(--s-7));
+    background:
+      radial-gradient(420px circle at var(--gx) var(--gy), rgba(255, 90, 43, 0.09), transparent 60%),
+      var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    transition:
+      border-color 0.3s,
+      transform 0.5s var(--ease);
+  }
+  .svc:hover {
+    border-color: var(--line-strong);
+    transform: translateY(-4px);
+  }
+  .svc:focus-within {
+    border-color: var(--accent);
+  }
+  .svc--primary {
+    border-color: rgba(255, 90, 43, 0.45);
+  }
+  .svc__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .svc__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .svc__tag {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .svc__title {
+    font-size: clamp(24px, 2.4vw, 34px);
+    letter-spacing: -0.035em;
+  }
+  .svc--primary .svc__title {
+    font-size: clamp(28px, 3vw, 44px);
+  }
+  /* вся карточка кликабельна через растянутую ссылку */
+  .svc__link {
+    text-decoration: none;
+  }
+  .svc__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .svc__link:focus-visible {
+    outline: none;
+  }
+  .svc__main,
+  .svc__side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  .svc__side {
+    margin-top: auto;
+  }
+  .svc__text {
+    color: var(--text-2);
+  }
+  /* основная услуга — широкая карточка в две колонки */
+  @media (min-width: 861px) {
+    .svc--primary {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--s-7);
+      align-items: end;
+    }
+    .svc--primary .svc__text {
+      font-size: var(--fs-lead);
+      max-width: 560px;
+    }
+    .svc--primary .svc__side {
+      padding-left: var(--s-6);
+      border-left: 1px solid var(--line);
+    }
+  }
+  .svc__more {
+    display: inline-flex;
+    gap: 8px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .svc__arrow {
+    transition: transform 0.35s var(--ease);
+  }
+  .svc:hover .svc__arrow {
+    transform: translateX(5px);
+  }
+</style>

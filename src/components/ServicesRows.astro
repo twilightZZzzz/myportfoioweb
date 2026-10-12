@@ -1,0 +1,151 @@
+---
+import type { Service } from '../data/types';
+
+interface Props {
+  services: Service[];
+}
+const { services } = Astro.props;
+---
+
+<ul class="rows">
+  {
+    services.map((s, i) => (
+      <li class:list={['row', { 'row--primary': s.primary }]} data-reveal style={`--i:${i}`}>
+        <a href={`/services/${s.slug}`} class="row__link" data-cursor="Открыть" data-curtain-label={s.title}>
+          <span class="row__n">{String(i + 1).padStart(2, '0')}</span>
+          <span class="row__main">
+            <span class="row__title">
+              {s.title}
+              {s.primary && <span class="row__badge">основное</span>}
+            </span>
+            <span class="row__text">{s.card.text}</span>
+          </span>
+          <span class="row__points">{s.card.points.join(' · ')}</span>
+          <span class="row__arrow" aria-hidden="true">
+            ↗
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .row {
+    border-top: 1px solid var(--line);
+  }
+  .row__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1.5fr) minmax(0, 0.9fr) 48px;
+    align-items: center;
+    gap: var(--s-5);
+    padding: clamp(24px, 3vw, 44px) 0;
+    text-decoration: none;
+    overflow: hidden;
+    isolation: isolate;
+    transition:
+      color 0.5s var(--ease),
+      padding 0.6s var(--ease);
+  }
+  .row__link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.6s var(--ease);
+  }
+  .row__n {
+    font-family: var(--f-mono);
+    font-size: var(--fs-mono);
+    color: var(--muted);
+    transition: color 0.4s;
+  }
+  .row__main {
+    display: grid;
+    gap: var(--s-2);
+  }
+  .row__title {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--s-3);
+    font-size: clamp(30px, 4.6vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .row--primary .row__title {
+    font-size: clamp(36px, 5.8vw, 92px);
+  }
+  .row__badge {
+    padding: 4px 10px;
+    border: 1px solid currentColor;
+    border-radius: 99px;
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .row__text {
+    max-width: 640px;
+    color: var(--text-2);
+    transition: color 0.4s;
+  }
+  .row__points {
+    font-size: var(--fs-small);
+    color: var(--muted);
+    transition: color 0.4s;
+  }
+  .row__arrow {
+    font-size: 32px;
+    justify-self: end;
+    transition: transform 0.6s var(--ease);
+  }
+  .row__link:focus-visible {
+    outline-offset: -2px;
+  }
+  @media (hover: hover) {
+    .row__link:hover {
+      color: var(--on-accent);
+      padding-inline: var(--s-5);
+    }
+    .row__link:hover::before {
+      transform: scaleY(1);
+    }
+    .row__link:hover .row__text,
+    .row__link:hover .row__points,
+    .row__link:hover .row__n,
+    .row__link:hover .row__badge {
+      color: rgba(11, 11, 12, 0.72);
+    }
+    .row__link:hover .row__arrow {
+      transform: rotate(45deg);
+    }
+  }
+  @media (max-width: 860px) {
+    .row__link {
+      grid-template-columns: 34px minmax(0, 1fr) 28px;
+      row-gap: var(--s-3);
+    }
+    .row__points {
+      grid-column: 2;
+      grid-row: 2;
+    }
+    .row__arrow {
+      grid-column: 3;
+      grid-row: 1;
+      font-size: 22px;
+    }
+  }
+</style>

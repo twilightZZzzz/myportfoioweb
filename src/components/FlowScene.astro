@@ -1,0 +1,553 @@
+---
+import type { Step } from '../data/types';
+
+interface Props {
+  steps: Step[];
+}
+const { steps } = Astro.props;
+const pad = (i: number) => String(i + 1).padStart(2, '0');
+---
+
+<section class="flow-scene" data-flow aria-labelledby="flow-title">
+  <div class="flow-scene__pin" data-flow-pin>
+    <div class="container flow-scene__grid">
+      <div class="flow-scene__copy">
+        <p class="label" data-scramble><b>(01)</b> Что получает бизнес</p>
+        <h2 id="flow-title" class="h2" data-split>Заявка с сайта доходит до человека <em>за секунды</em></h2>
+        <p class="flow-scene__counter" aria-hidden="true"><span data-flow-counter>01</span> / {pad(steps.length - 1)}</p>
+        <ol class="flow-scene__steps">
+          {
+            steps.map((s, i) => (
+              <li class:list={['fstep', { 'is-active': i === 0 }]} data-flow-step>
+                <span class="fstep__n">{pad(i)}</span>
+                <span class="fstep__label">{s.label}</span>
+                {s.note && <span class="fstep__note">{s.note}</span>}
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      <div class="flow-scene__stage" aria-hidden="true">
+        <!-- 1. Сайт -->
+        <div class="frame frame--site" data-flow-frame>
+          <span class="frame__chip">01 · Сайт</span>
+          <div class="ui-bar"><i></i><i></i><i></i><span>your-company.ru</span></div>
+          <div class="site">
+            <div class="site__nav"><b>ВАША КОМПАНИЯ</b><span>Услуги</span><span>Работы</span><span>Контакты</span></div>
+            <div class="site__hero">
+              <div>
+                <p class="site__h">Понятно <em>с первого</em> экрана</p>
+                <span class="site__line" data-type style="width:82%"></span>
+                <span class="site__line" data-type style="width:64%"></span>
+                <span class="site__btn" data-pop>Оставить заявку →</span>
+              </div>
+              <div class="site__img" data-pop></div>
+            </div>
+            <div class="site__cards"><div data-pop></div><div data-pop></div><div data-pop></div></div>
+          </div>
+        </div>
+
+        <!-- 2. Форма -->
+        <div class="frame frame--form" data-flow-frame>
+          <span class="frame__chip">02 · Форма</span>
+          <div class="ui-bar"><i></i><i></i><i></i><span>your-company.ru/contact</span></div>
+          <div class="form">
+            <p class="form__title">Оставьте заявку</p>
+            <div class="form__field"><small>Имя</small><span data-type>Анна</span></div>
+            <div class="form__field"><small>Телефон</small><span data-type>+7 900 000-00-00</span></div>
+            <div class="form__field form__field--tall"><small>Задача</small><span data-type>Нужен ремонт кухни, хочу узнать сроки</span></div>
+            <div class="form__check"><i>✓</i> Согласие на обработку данных</div>
+            <span class="form__btn" data-press>Отправить</span>
+            <span class="form__ok" data-pop>✓ Данные проверены</span>
+          </div>
+        </div>
+
+        <!-- 3. Интеграции -->
+        <div class="frame frame--tg" data-flow-frame>
+          <span class="frame__chip">03 · Интеграции</span>
+          <div class="tg">
+            <div class="tg__head"><span class="tg__ava">✦</span><span><b>Бот заявок</b><small>в сети</small></span></div>
+            <div class="tg__msg" data-pop>
+              <b>Новая заявка с сайта</b>
+              <span>Имя: Анна</span>
+              <span>Телефон: +7 900 000-00-00</span>
+              <span>Задача: ремонт кухни</span>
+            </div>
+          </div>
+          <div class="sheet" data-pop>
+            <p>Таблица заявок</p>
+            <div class="sheet__row sheet__row--head"><span>Клиент</span><span>Задача</span><span>Статус</span></div>
+            <div class="sheet__row"><span>—</span><span>—</span><span>—</span></div>
+            <div class="sheet__row sheet__row--new"><span>Анна</span><span>Кухня</span><span>Новая</span></div>
+          </div>
+        </div>
+
+        <!-- 4. Автоматизация -->
+        <div class="frame frame--auto" data-flow-frame>
+          <span class="frame__chip">04 · Автоматизация</span>
+          <div class="board">
+            <div class="board__col"><p>Новые</p><div class="board__card board__card--ghost"></div></div>
+            <div class="board__col board__col--active">
+              <p>В работе</p>
+              <div class="board__card" data-pop><b>Анна</b><span>Ремонт кухни</span><em>Менеджер: Иван</em></div>
+            </div>
+            <div class="board__col"><p>Готово</p></div>
+          </div>
+          <div class="toast-ui" data-pop><span>⏰</span> Напоминание: перезвонить клиенту до 18:00</div>
+          <div class="toast-ui toast-ui--ok" data-pop><span>✓</span> Сводка за день отправлена руководителю</div>
+        </div>
+
+        <span class="flow-scene__scan" data-flow-scan></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .flow-scene__pin {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--s-8);
+  }
+  .flow-scene__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.2fr);
+    gap: clamp(var(--s-6), 5vw, var(--s-9));
+    align-items: center;
+  }
+  .flow-scene__copy {
+    display: grid;
+    gap: var(--s-5);
+  }
+  .flow-scene__copy .h2 {
+    font-size: clamp(34px, 4.4vw, 68px);
+  }
+  .flow-scene__counter {
+    font-family: var(--f-mono);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .flow-scene__counter span {
+    color: var(--accent);
+    font-size: 28px;
+  }
+  .flow-scene__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+  .fstep {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    transition: color 0.5s;
+  }
+  .fstep__n {
+    font-family: var(--f-mono);
+    font-size: 12px;
+    padding-top: 6px;
+  }
+  .fstep__label {
+    font-size: clamp(18px, 1.6vw, 23px);
+    letter-spacing: -0.02em;
+  }
+  .fstep__note {
+    grid-column: 2;
+    font-size: 15px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-height 0.6s var(--ease),
+      opacity 0.4s;
+  }
+  .fstep.is-active {
+    color: var(--text);
+  }
+  .fstep.is-active .fstep__n {
+    color: var(--accent);
+  }
+  .fstep.is-active .fstep__note {
+    max-height: 60px;
+    opacity: 1;
+    color: var(--text-2);
+  }
+
+  /* ------- сцена ------- */
+  .flow-scene__stage {
+    position: relative;
+    aspect-ratio: 16 / 11;
+    container-type: inline-size;
+  }
+  .frame {
+    position: absolute;
+    inset: 0;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 2cqw;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    box-shadow: 0 40px 80px -40px rgba(0, 0, 0, 0.8);
+  }
+  .frame__chip {
+    position: absolute;
+    right: 2.4cqw;
+    bottom: 2.4cqw;
+    z-index: 3;
+    padding: 0.8cqw 1.6cqw;
+    border-radius: 99px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: var(--f-mono);
+    font-size: max(10px, 1.4cqw);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .flow-scene__scan {
+    position: absolute;
+    top: -4%;
+    bottom: -4%;
+    left: 0;
+    width: 2px;
+    z-index: 5;
+    background: var(--accent);
+    box-shadow: 0 0 24px 4px rgba(255, 90, 43, 0.55);
+    opacity: 0;
+  }
+  .ui-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.8cqw;
+    padding: 1.4cqw 1.8cqw;
+    border-bottom: 1px solid var(--line);
+    font-size: max(9px, 1.2cqw);
+    color: var(--muted);
+  }
+  .ui-bar i {
+    width: 1.1cqw;
+    height: 1.1cqw;
+    border-radius: 50%;
+    background: var(--line-strong);
+  }
+  .ui-bar span {
+    margin-left: 1.4cqw;
+    font-family: var(--f-mono);
+  }
+
+  /* сайт */
+  .frame--site {
+    background: #15110e;
+  }
+  .site {
+    padding: 2cqw 3.4cqw;
+  }
+  .site__nav {
+    display: flex;
+    gap: 3cqw;
+    align-items: center;
+    font-size: max(9px, 1.3cqw);
+    color: var(--text-2);
+  }
+  .site__nav b {
+    margin-right: auto;
+    color: var(--text);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .site__hero {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 3cqw;
+    margin-top: 4cqw;
+    align-items: center;
+  }
+  .site__h {
+    font-size: 5.4cqw;
+    line-height: 0.95;
+    letter-spacing: -0.05em;
+    font-weight: 600;
+    margin-bottom: 2.4cqw;
+  }
+  .site__h em {
+    font-family: var(--f-serif);
+    font-style: italic;
+    font-weight: 500;
+    color: var(--accent);
+  }
+  .site__line {
+    display: block;
+    height: 1.1cqw;
+    border-radius: 1cqw;
+    background: rgba(239, 234, 224, 0.16);
+    margin-bottom: 1.2cqw;
+  }
+  .site__btn {
+    display: inline-block;
+    margin-top: 1.6cqw;
+    padding: 1.4cqw 2.6cqw;
+    border-radius: 99px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: max(9px, 1.5cqw);
+    font-weight: 600;
+  }
+  .site__img {
+    aspect-ratio: 1;
+    border-radius: 1.6cqw;
+    background:
+      radial-gradient(circle at 70% 25%, var(--accent) 0 18%, transparent 19%),
+      linear-gradient(160deg, #3a2a20, #1d1612);
+  }
+  .site__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6cqw;
+    margin-top: 3cqw;
+  }
+  .site__cards div {
+    height: 9cqw;
+    border-radius: 1.2cqw;
+    background: rgba(239, 234, 224, 0.06);
+    border: 1px solid var(--line);
+  }
+
+  /* форма */
+  .form {
+    width: 62%;
+    margin: 3cqw auto 0;
+    display: grid;
+    gap: 1.4cqw;
+  }
+  .form__title {
+    font-size: 3.4cqw;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+  }
+  .form__field {
+    display: grid;
+    gap: 0.4cqw;
+    padding: 1.2cqw 1.6cqw;
+    border: 1px solid var(--line-strong);
+    border-radius: 1cqw;
+    background: var(--surface-2);
+    font-size: max(10px, 1.6cqw);
+  }
+  .form__field small {
+    font-size: max(8px, 1.1cqw);
+    color: var(--muted);
+  }
+  .form__field span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .form__check {
+    font-size: max(9px, 1.3cqw);
+    color: var(--text-2);
+  }
+  .form__check i {
+    display: inline-grid;
+    place-items: center;
+    width: 2cqw;
+    height: 2cqw;
+    margin-right: 0.8cqw;
+    border-radius: 0.4cqw;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-style: normal;
+    font-size: 1.3cqw;
+  }
+  .form__btn {
+    justify-self: start;
+    padding: 1.4cqw 3cqw;
+    border-radius: 99px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+    font-size: max(10px, 1.6cqw);
+  }
+  .form__ok {
+    font-size: max(9px, 1.4cqw);
+    color: var(--success);
+  }
+
+  /* Telegram + таблица */
+  .frame--tg {
+    background: #0e1621;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.4cqw;
+    padding: 3cqw;
+    align-items: start;
+  }
+  .tg {
+    border-radius: 1.6cqw;
+    background: #17212b;
+    overflow: hidden;
+  }
+  .tg__head {
+    display: flex;
+    align-items: center;
+    gap: 1.2cqw;
+    padding: 1.6cqw;
+    background: #1f2b38;
+    font-size: max(10px, 1.5cqw);
+  }
+  .tg__head b,
+  .tg__head small {
+    display: block;
+  }
+  .tg__head small {
+    color: var(--muted);
+    font-size: max(8px, 1.1cqw);
+  }
+  .tg__ava {
+    display: grid;
+    place-items: center;
+    width: 4.4cqw;
+    height: 4.4cqw;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+  .tg__msg {
+    display: grid;
+    gap: 0.5cqw;
+    margin: 2cqw;
+    padding: 1.6cqw 2cqw;
+    border-radius: 1.6cqw 1.6cqw 1.6cqw 0.4cqw;
+    background: #24303d;
+    font-size: max(10px, 1.5cqw);
+  }
+  .tg__msg span {
+    color: var(--text-2);
+  }
+  .sheet {
+    border-radius: 1.6cqw;
+    background: #f1ede4;
+    color: #1b1a18;
+    padding: 1.6cqw;
+    font-size: max(9px, 1.3cqw);
+  }
+  .sheet p {
+    font-weight: 600;
+    margin-bottom: 1.2cqw;
+  }
+  .sheet__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    padding: 0.9cqw 0.6cqw;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  .sheet__row--head {
+    color: #6b665d;
+    border-top: 0;
+  }
+  .sheet__row--new {
+    background: rgba(255, 90, 43, 0.16);
+    border-radius: 0.6cqw;
+    font-weight: 600;
+  }
+
+  /* автоматизация */
+  .frame--auto {
+    padding: 3cqw;
+    background: #121110;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.6cqw;
+  }
+  .board__col {
+    min-height: 26cqw;
+    padding: 1.4cqw;
+    border-radius: 1.4cqw;
+    background: rgba(239, 234, 224, 0.04);
+    border: 1px solid var(--line);
+  }
+  .board__col p {
+    font-family: var(--f-mono);
+    font-size: max(9px, 1.2cqw);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 1.2cqw;
+  }
+  .board__col--active {
+    border-color: rgba(255, 90, 43, 0.5);
+  }
+  .board__card {
+    display: grid;
+    gap: 0.4cqw;
+    padding: 1.4cqw;
+    border-radius: 1cqw;
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    font-size: max(10px, 1.4cqw);
+  }
+  .board__card span {
+    color: var(--text-2);
+  }
+  .board__card em {
+    font-style: normal;
+    color: var(--accent);
+    font-size: max(9px, 1.2cqw);
+  }
+  .board__card--ghost {
+    height: 8cqw;
+    border-style: dashed;
+    background: none;
+  }
+  .toast-ui {
+    margin-top: 2cqw;
+    display: flex;
+    align-items: center;
+    gap: 1.2cqw;
+    width: fit-content;
+    padding: 1.2cqw 2cqw;
+    border-radius: 99px;
+    background: var(--surface-2);
+    border: 1px solid var(--line-strong);
+    font-size: max(10px, 1.4cqw);
+  }
+  .toast-ui--ok {
+    color: var(--success);
+  }
+
+  /* ------- телефон: кадры идут друг за другом ------- */
+  @media (max-width: 899px) {
+    .flow-scene__pin {
+      min-height: 0;
+      padding-block: var(--section) 0;
+    }
+    .flow-scene__grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .flow-scene__counter,
+    .flow-scene__steps,
+    .flow-scene__scan {
+      display: none;
+    }
+    .flow-scene__stage {
+      aspect-ratio: auto;
+      display: grid;
+      gap: var(--s-4);
+    }
+    .frame {
+      position: relative;
+      inset: auto;
+      aspect-ratio: 16 / 11;
+    }
+    .frame--tg {
+      grid-template-columns: 1fr;
+      aspect-ratio: auto;
+    }
+  }
+</style>

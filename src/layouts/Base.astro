@@ -1,0 +1,138 @@
+---
+import '@fontsource/inter-tight/cyrillic-400.css';
+import '@fontsource/inter-tight/latin-400.css';
+import '@fontsource/inter-tight/cyrillic-500.css';
+import '@fontsource/inter-tight/latin-500.css';
+import '@fontsource/inter-tight/cyrillic-600.css';
+import '@fontsource/inter-tight/latin-600.css';
+import '@fontsource/cormorant-garamond/cyrillic-500-italic.css';
+import '@fontsource/cormorant-garamond/latin-500-italic.css';
+import '@fontsource/jetbrains-mono/cyrillic-400.css';
+import '@fontsource/jetbrains-mono/latin-400.css';
+import '../styles/global.css';
+// основные начертания для первого экрана — предзагружаем, чтобы текст не «прыгал» при смене шрифта
+import fontRegular from '@fontsource/inter-tight/files/inter-tight-cyrillic-400-normal.woff2?url';
+import fontSemibold from '@fontsource/inter-tight/files/inter-tight-cyrillic-600-normal.woff2?url';
+
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { siteConfig, missingConfigFields } from '../data/site';
+
+interface Props {
+  /** Заголовок страницы без имени сайта */
+  title: string;
+  description: string;
+  /** Не индексировать (служебные страницы) */
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Титры в подвале — для главной */
+  credits?: boolean;
+}
+
+const { title, description, noindex = false, ogType = 'website', jsonLd, credits = false } = Astro.props;
+const brand = siteConfig.brand || siteConfig.name;
+const fullTitle = brand ? `${title} — ${brand}` : title;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+const missing = import.meta.env.DEV ? missingConfigFields() : [];
+const ld = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta name="theme-color" content="#0b0b0c" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href={fontSemibold} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontRegular} as="font" type="font/woff2" crossorigin />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {brand && <meta property="og:site_name" content={brand} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {ld.map(item => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+
+    <script is:inline>
+      (function () {
+        const h = document.documentElement;
+        h.classList.add('js');
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        h.classList.add('motion');
+        try {
+          if (sessionStorage.getItem('curtain')) h.classList.add('curtain-on');
+        } catch {
+          /* приватный режим */
+        }
+        // если скрипт анимаций не загрузился — через 4 секунды показываем всё как есть
+        setTimeout(function () {
+          if (!h.classList.contains('motion-ready')) h.classList.remove('motion', 'curtain-on');
+        }, 4000);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <slot name="intro" />
+    {
+      missing.length > 0 && (
+        <div class="dev-banner" role="note">
+          <b>Видно только при разработке.</b> Перед публикацией заполни src/data/site.ts: {missing.join('; ')}
+        </div>
+      )
+    }
+    <Header />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer credits={credits} />
+
+    <div class="grid-overlay" aria-hidden="true">
+      <div class="container">
+        {Array.from({ length: 12 }, () => <span />)}
+      </div>
+    </div>
+
+    <div class="grain" aria-hidden="true"></div>
+    <div class="progress" aria-hidden="true" data-progress></div>
+    <div class="cursor" aria-hidden="true" data-cursor-el>
+      <div class="cursor__ring"><span class="cursor__label" data-cursor-label></span></div>
+      <div class="cursor__dot"></div>
+    </div>
+    <div class="curtain" aria-hidden="true" data-curtain>
+      <span class="curtain__label" data-curtain-label></span>
+    </div>
+
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>
+
+<style>
+  .dev-banner {
+    position: relative;
+    z-index: 200;
+    padding: 10px var(--gutter);
+    background: #3a2a00;
+    color: #ffe08a;
+    font-size: 14px;
+  }
+  main:focus {
+    outline: none;
+  }
+</style>
