@@ -12,7 +12,7 @@ export const siteConfig: SiteConfig = {
   region: 'Республика Башкортостан',
   workArea: 'по всей России',
   contacts: {
-    telegram: '',
+    telegram: 'sergeychukavin',
     email: '',
   },
   about: {
@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
   },
   stack: [],
   legal: {
-    operatorName: '',
+    operatorName: 'Чукавин Сергей Андреевич',
     policyDate: '2026-10-12',
   },
 };
