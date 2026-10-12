@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Имя Фамилия — веб-дизайнер</title>
+  <meta name="description" content="Портфолио веб-дизайнера: сайты с характером, историей и вниманием к каждому пикселю.">
+  <meta name="theme-color" content="#0b0b0c">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap&subset=cyrillic" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="is-loading">
+
+  <!-- Обратный отсчёт киноплёнки -->
+  <div class="leader" id="leader" aria-hidden="true">
+    <div class="leader__ring">
+      <div class="leader__sweep"></div>
+      <span class="leader__cross leader__cross--h"></span>
+      <span class="leader__cross leader__cross--v"></span>
+      <span class="leader__num" id="leaderNum">3</span>
+    </div>
+    <div class="leader__meta mono">
+      <span>СЦЕНА 01</span><span>ДУБЛЬ 1</span><span id="leaderPct">000%</span>
+    </div>
+    <button class="leader__skip mono" id="leaderSkip">Пропустить · Esc</button>
+  </div>
+
+  <div class="grain" aria-hidden="true"></div>
+  <div class="grid-overlay" id="gridOverlay" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <div class="cursor__ring"><span class="cursor__label" id="cursorLabel"></span></div>
+    <div class="cursor__dot"></div>
+  </div>
+
+  <header class="nav">
+    <a href="#top" class="nav__logo" data-magnetic>Имя&nbsp;Фамилия<sup>©</sup></a>
+    <nav class="nav__links">
+      <a href="#work" data-scroll>Кейсы</a>
+      <a href="#approach" data-scroll>Подход</a>
+      <a href="#contact" data-scroll>Контакт</a>
+    </nav>
+    <div class="nav__status mono"><i class="dot"></i><span class="hide-sm">Открыт к проектам · </span><span id="clock">00:00</span></div>
+  </header>
+
+  <main id="top">
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+      <div class="hero__glow" id="heroGlow"></div>
+      <div class="hero__inner">
+        <p class="hero__kicker mono" data-reveal>Веб-дизайнер · UX/UI · Motion</p>
+        <h1 class="hero__title" aria-label="Дизайн, который чувствуют">
+          <span class="hero__layer hero__layer--base" aria-hidden="true">
+            <span class="line"><span class="line__in">Дизайн,</span></span>
+            <span class="line"><span class="line__in">который</span></span>
+            <span class="line"><span class="line__in"><em>чувствуют</em></span></span>
+          </span>
+          <span class="hero__layer hero__layer--lit" aria-hidden="true">
+            <span class="line"><span class="line__in">Дизайн,</span></span>
+            <span class="line"><span class="line__in">который</span></span>
+            <span class="line"><span class="line__in"><em>чувствуют</em></span></span>
+          </span>
+        </h1>
+        <p class="hero__sub" data-reveal>Создаю сайты, от которых не хочется уходить: интерфейсы с&nbsp;характером, историей и&nbsp;вниманием к&nbsp;каждому пикселю.</p>
+      </div>
+      <div class="hero__hud mono" aria-hidden="true">
+        <span class="rec"><i></i>REC</span>
+        <span id="timecode">00:00:00:00</span>
+        <span class="hide-sm">ISO 800 · 24 FPS · 4K</span>
+        <span class="hero__scroll">Листай ↓</span>
+      </div>
+      <span class="corner corner--tl"></span><span class="corner corner--tr"></span>
+      <span class="corner corner--bl"></span><span class="corner corner--br"></span>
+    </section>
+
+    <!-- БЕГУЩАЯ СТРОКА -->
+    <section class="marquee" aria-label="Навыки">
+      <div class="marquee__track" id="marquee">
+        <div class="marquee__group">
+          <span>Веб-дизайн</span><i>✦</i><span class="serif">UX/UI</span><i>✦</i><span>Дизайн-системы</span><i>✦</i><span class="serif">Motion</span><i>✦</i><span>Арт-дирекшн</span><i>✦</i><span class="serif">Figma</span><i>✦</i>
+        </div>
+        <div class="marquee__group" aria-hidden="true">
+          <span>Веб-дизайн</span><i>✦</i><span class="serif">UX/UI</span><i>✦</i><span>Дизайн-системы</span><i>✦</i><span class="serif">Motion</span><i>✦</i><span>Арт-дирекшн</span><i>✦</i><span class="serif">Figma</span><i>✦</i>
+        </div>
+      </div>
+    </section>
+
+    <!-- МАНИФЕСТ -->
+    <section class="manifesto" id="approach">
+      <p class="label mono">(01) Манифест</p>
+      <p class="manifesto__text" id="manifesto">Хороший сайт — это не набор блоков. Это сцена, где у&nbsp;каждого элемента есть роль, у&nbsp;каждого движения — смысл, а&nbsp;у&nbsp;зрителя — <em>эмоция</em>, которую он унесёт с&nbsp;собой.</p>
+    </section>
+
+    <!-- КЕЙСЫ -->
+    <section class="work" id="work">
+      <div class="work__head">
+        <p class="label mono">(02) Избранные сцены</p>
+        <h2 class="section-title">Кейсы, <em>которые</em><br>сработали</h2>
+      </div>
+      <div class="work__pin" id="workPin">
+        <div class="work__track" id="workTrack"></div>
+      </div>
+    </section>
+
+    <!-- ПРОЦЕСС: из скетча в пиксель -->
+    <section class="process" id="process">
+      <div class="process__pin" id="processPin">
+        <div class="process__copy">
+          <p class="label mono">(03) Как я работаю</p>
+          <h2 class="section-title">Из скетча<br><em>в&nbsp;пиксель</em></h2>
+          <ol class="process__steps" id="processSteps">
+            <li class="is-active"><span class="mono">01</span>Исследование<small>Погружаюсь в продукт, аудиторию и конкурентов</small></li>
+            <li><span class="mono">02</span>Каркас<small>Собираю структуру и сценарии в прототипе</small></li>
+            <li><span class="mono">03</span>Визуал<small>Ищу характер: типографика, цвет, ритм</small></li>
+            <li><span class="mono">04</span>Движение<small>Оживляю интерфейс и передаю в разработку</small></li>
+          </ol>
+        </div>
+        <div class="process__stage" aria-hidden="true">
+          <div class="frame frame--wire">
+            <div class="fw__bar"><i></i><i></i><i></i></div>
+            <div class="fw__nav"><b></b><b></b><b></b><b></b></div>
+            <div class="fw__hero"><b class="w70"></b><b class="w50"></b><b class="w30 btn"></b><div class="fw__img">✕</div></div>
+            <div class="fw__cards"><div></div><div></div><div></div></div>
+            <span class="fw__note mono">h1 / 96px</span>
+            <span class="fw__note fw__note--2 mono">CTA</span>
+          </div>
+          <div class="frame frame--final" id="frameFinal">
+            <div class="ff__bar"><i></i><i></i><i></i><span class="mono">nordcoffee.ru</span></div>
+            <div class="ff__nav"><b>NORD</b><span>Кофе</span><span>Обжарка</span><span>О нас</span></div>
+            <div class="ff__hero">
+              <div>
+                <h3>Кофе, который<br><em>просыпается</em> с тобой</h3>
+                <span class="ff__btn">Выбрать зёрна →</span>
+              </div>
+              <div class="ff__img"><div class="ff__bean"></div></div>
+            </div>
+            <div class="ff__cards"><div>Эфиопия</div><div>Колумбия</div><div>Кения</div></div>
+          </div>
+          <div class="process__scan" id="processScan"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ЭКСПЕРТИЗА -->
+    <section class="expertise">
+      <p class="label mono">(04) В цифрах</p>
+      <div class="stats">
+        <div class="stat"><b data-count="8">0</b><sup>+</sup><span>лет в дизайне интерфейсов</span></div>
+        <div class="stat"><b data-count="64">0</b><sup>+</sup><span>запущенных сайтов и продуктов</span></div>
+        <div class="stat"><b data-count="12">0</b><span>наград и упоминаний</span></div>
+        <div class="stat"><b data-count="38">0</b><sup>%</sup><span>средний рост конверсии после редизайна</span></div>
+      </div>
+
+      <p class="label mono" style="margin-top:clamp(64px,10vw,140px)">(05) Что я делаю</p>
+      <ul class="services">
+        <li class="service" data-cursor="✦"><span class="mono">01</span><h3>Веб-дизайн и лендинги</h3><p>Сайты, которые продают и запоминаются</p><i>↗</i></li>
+        <li class="service" data-cursor="✦"><span class="mono">02</span><h3>UX-исследования и прототипы</h3><p>Логика, сценарии, проверка гипотез</p><i>↗</i></li>
+        <li class="service" data-cursor="✦"><span class="mono">03</span><h3>Дизайн-системы</h3><p>Компоненты, токены, документация</p><i>↗</i></li>
+        <li class="service" data-cursor="✦"><span class="mono">04</span><h3>Motion и интерактив</h3><p>Анимации, микровзаимодействия, 3D</p><i>↗</i></li>
+        <li class="service" data-cursor="✦"><span class="mono">05</span><h3>Арт-дирекшн</h3><p>Визуальный язык бренда в цифре</p><i>↗</i></li>
+      </ul>
+    </section>
+
+    <!-- ОТЗЫВЫ КАК ЦИТАТЫ КРИТИКОВ -->
+    <section class="critics">
+      <p class="label mono">(06) Говорят критики</p>
+      <div class="critics__grid">
+        <figure class="critic" data-reveal>
+          <div class="stars">★★★★★</div>
+          <blockquote>«Сайт, после которого наши клиенты стали писать нам <em>просто чтобы сказать спасибо</em>»</blockquote>
+          <figcaption class="mono">Анна К. — основатель Nord Coffee</figcaption>
+        </figure>
+        <figure class="critic" data-reveal>
+          <div class="stars">★★★★★</div>
+          <blockquote>«Редкий дизайнер, который думает <em>как продакт</em> и рисует как художник»</blockquote>
+          <figcaption class="mono">Илья М. — CPO, Volna</figcaption>
+        </figure>
+        <figure class="critic" data-reveal>
+          <div class="stars">★★★★★</div>
+          <blockquote>«Запуск получился <em>кинематографичным</em>. Трафик вырос втрое за первую неделю»</blockquote>
+          <figcaption class="mono">Дарья С. — продюсер Pulse Fest</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- КОНТАКТ -->
+    <section class="contact" id="contact">
+      <div class="contact__glow"></div>
+      <p class="label mono">(07) Финальная сцена</p>
+      <h2 class="contact__title">
+        <span class="line"><span class="line__in">Снимем</span></span>
+        <span class="line"><span class="line__in">что-то <em>вместе?</em></span></span>
+      </h2>
+      <div class="contact__row">
+        <button class="pill pill--big" id="copyEmail" data-magnetic data-cursor="Копировать">hello@yourname.design</button>
+        <div class="contact__links">
+          <a href="https://t.me/" target="_blank" rel="noopener" data-cursor="↗">Telegram</a>
+          <a href="https://dribbble.com/" target="_blank" rel="noopener" data-cursor="↗">Dribbble</a>
+          <a href="https://www.behance.net/" target="_blank" rel="noopener" data-cursor="↗">Behance</a>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noopener" data-cursor="↗">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ТИТРЫ -->
+    <footer class="credits">
+      <div class="credits__roll" id="credits">
+        <p class="mono">В ролях</p>
+        <dl>
+          <dt>Режиссёр и дизайн</dt><dd>Имя Фамилия</dd>
+          <dt>Типографика</dt><dd>Inter Tight, Cormorant Garamond</dd>
+          <dt>Свет и движение</dt><dd>GSAP, Lenis</dd>
+          <dt>Кофе на площадке</dt><dd>Очень много</dd>
+          <dt>Особая благодарность</dt><dd>Тебе — за то, что досмотрел до титров</dd>
+        </dl>
+      </div>
+      <div class="credits__bottom mono">
+        <span>© <span id="year">2026</span> Имя Фамилия</span>
+        <button class="credits__grid" id="gridToggle">Показать сетку <kbd>G</kbd></button>
+        <a href="#top" data-scroll>Наверх ↑</a>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Страница кейса -->
+  <div class="case" id="case" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="caseTitle">
+    <div class="case__scroll" id="caseScroll" data-lenis-prevent>
+      <button class="case__close mono" id="caseClose" data-cursor="Закрыть">Закрыть ✕</button>
+      <div class="case__content" id="caseContent"></div>
+    </div>
+  </div>
+
+  <div class="toast mono" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/cases.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
